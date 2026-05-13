@@ -1,20 +1,38 @@
 <!-- Estrutura básica com os dois botões iniciais -->
-<LinearLayout
+
+<LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:gravity="center"> <!-- Centraliza tudo na tela do relógio -->
 
+    <!-- 1. O Título fica no topo -->
+    <TextView
+        android:id="@+id/tvTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CENTRAL DE AJUDA"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <!-- 2. Botão de Emergência logo abaixo -->
     <Button
         android:id="@+id/btnEmergencia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Emergência" />
+        android:text="Emergência"
+        android:backgroundTint="#FF0000" />
 
+    <!-- 3. Botão de Ajuda por último -->
     <Button
-        android:id"@+id/btnAjuda"
+        android:id="@+id/btnAjuda"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ajuda" />
+        android:text="Ajuda"
+        android:backgroundTint="#FF9800" />
 
-</LinearLayout>        
+</LinearLayout>
