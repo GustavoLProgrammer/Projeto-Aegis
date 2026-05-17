@@ -20,6 +20,7 @@ body {
     position: fixed;
     top: 0;
     z-index: 102;
+    border-bottom: solid 1px #e0e0e0;
 }
 
 .logo-container {
@@ -85,10 +86,4 @@ body {
 .acesso button:nth-child(2) a:hover {
     background-color: #d41932;
     border-color: #E60A25;
-}
-
-.header-divisao {
-    border: 0;
-    height: 1px;
-    background-color: #e0e0e0;
 }
