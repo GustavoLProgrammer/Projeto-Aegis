@@ -1,0 +1,94 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    width: 100%;
+    background-color: #ffffff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    width: 100%;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    z-index: 102;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1a1a1a;
+    letter-spacing: 1px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #4a4a4a;
+    font-weight: bold;
+    transition: color 0.2s ease;
+    padding: 10px;
+}
+
+.acesso {
+    display: flex;
+    gap: 15px;
+}
+
+.acesso button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.acesso button a {
+    text-decoration: none;
+    color: black;
+    border: solid 1px gray;
+    border-radius: 5px;
+    padding: 10px;
+    display: inline-block;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.acesso button:nth-child(1) a:hover {
+    background-color: #BB071E;
+    color: white;
+    border-color: #BB071E;
+}
+
+
+.acesso button:nth-child(2) a {
+    background-color: #BB071E;
+    color: white;
+}
+.acesso button:nth-child(2) a:hover {
+    background-color: #d41932;
+    border-color: #E60A25;
+}
+
+.header-divisao {
+    border: 0;
+    height: 1px;
+    background-color: #e0e0e0;
+}
