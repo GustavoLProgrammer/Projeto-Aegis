@@ -49,6 +49,10 @@ body {
     padding: 10px;
 }
 
+.nav-menu a:hover {
+    color: #BB071E;
+}
+
 .acesso {
     display: flex;
     gap: 15px;
@@ -78,12 +82,308 @@ body {
     border-color: #BB071E;
 }
 
-
 .acesso button:nth-child(2) a {
     background-color: #BB071E;
     color: white;
+    border: solid 1px #BB071E;
 }
+
 .acesso button:nth-child(2) a:hover {
     background-color: #d41932;
     border-color: #E60A25;
+}
+
+main {
+    margin-top: 75px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.aegis-section {
+    width: 100%;
+    padding: 60px 5%;
+}
+
+.container-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.aegis-conteudo {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.h1-des {
+    font-size: 42px;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+.h2-des {
+    font-size: 18px;
+    color: #6B6D6B;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.btn-denuncia-sistema button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: 100px;
+}
+
+.btn-denuncia-sistema button a {
+    text-decoration: none;
+    padding: 12px 25px;
+    font-weight: bold;
+    border-radius: 5px;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-denuncia-sistema button:nth-child(1) a {
+    background-color: #BB071E;
+    color: white;
+    border: solid 1px #BB071E;
+}
+
+.btn-denuncia-sistema button:nth-child(1) a:hover {
+    background-color: #E60A25;
+    border-color: #E60A25;
+}
+
+.btn-denuncia-sistema button:nth-child(2) a {
+    background-color: transparent;
+    color: #161616;
+    border: solid 1px #6B6D6B;
+}
+
+.btn-denuncia-sistema button:nth-child(2) a:hover {
+    background-color: #BB071E;
+    border: solid 1px #BB071E;
+    color: white;
+}
+
+.container-numeros {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;  
+    width: 100%;
+}
+
+.num-180, .num-190 {
+    display: inline-block;
+    padding: 5px 15px;
+    align-items: center;
+    font-weight: bold;
+    color: #BB071E;
+    border-radius: 4px;
+}
+.num-180 i, .num-190 i {
+    margin-right: 8px;
+    font-size: 20px;
+    color: #BB071E;
+}
+
+.aegis-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.aegis-img {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.nossos-servicos {
+    width: 100%;
+    background-color: #F2F2F2;
+    padding: 60px 5%;
+}
+
+.nossos-servicos-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.titulo-servicos {
+    grid-column: 1 / -1;
+    width: 100%;
+    font-size: 30px;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.nossos-servicos > .nossos-servicos-container > div:hover {
+    transform: translateY(-5px);
+}
+
+.nossos-servicos h2 {
+    font-size: 18px;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.nossos-servicos p {
+    font-size: 14px;
+    color: #666666;
+    line-height: 1.5;
+}
+
+.nossos-servicos h2, 
+.nossos-servicos p, 
+.icone-servico-card {
+    margin: 0;
+    text-align: left;
+}
+
+i.icone-servico-card {
+    font-size: 32px;
+    color: #BB071E;
+    margin-bottom: 15px;
+}
+
+.nossos-servicos > .nossos-servicos-container > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 12px;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #DEDEDE;
+    transition: transform 0.3s ease;
+}
+
+.nossos-servicos > .nossos-servicos-container > div:hover i.icone-servico-card {
+    color: #E60A25;
+}
+
+.sobre-aegis {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 60px 5%;
+}
+
+.sobre-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.sobre-aegis h2 {
+    font-size: 30px;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sobre-aegis p {
+    font-size: 20px;
+    color: #6B6D6B;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.info-servico {
+    width: 100%;
+    background-color: #fff;
+    padding: 60px 5%;
+    border-top: 1px solid #e0e0e0;
+}
+
+.info-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.info-servico h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #666666;
+    text-align: center;
+}
+
+.info-servico p {
+    font-size: 28px;
+    font-weight: bold;
+    color: #BB071E;
+    text-align: center;
+}
+
+.ajuda {
+    width: 100%;
+    background-color: #BB071E;
+    padding: 60px 5%;
+}
+
+.ajuda-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.ajuda h1 {
+    font-size: 32px;
+}
+
+.ajuda p {
+    font-size: 16px;
+    max-width: 600px;
+}
+
+.btn-denuncia-180 button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.btn-denuncia-180 button a {
+    text-decoration: none;
+    padding: 12px 30px;
+    font-weight: bold;
+    border-radius: 5px;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.btn-denuncia-180 button:nth-child(1) a, .btn-denuncia-180 button:nth-child(2) a {
+    background-color: white;
+    color: black;
+}
+
+.btn-denuncia-180 button:nth-child(1) a:hover, .btn-denuncia-180 button:nth-child(2) a:hover {
+    background-color: rgba(255, 255, 255, 0.85);
 }
