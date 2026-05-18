@@ -310,7 +310,6 @@ i.icone-servico-card {
     width: 100%;
     background-color: #fff;
     padding: 60px 5%;
-    border-top: 1px solid #e0e0e0;
 }
 
 .info-container {
@@ -386,4 +385,104 @@ i.icone-servico-card {
 
 .btn-denuncia-180 button:nth-child(1) a:hover, .btn-denuncia-180 button:nth-child(2) a:hover {
     background-color: rgba(255, 255, 255, 0.85);
+}
+
+footer {
+    background-color: #161616;
+    color: #ffffff;
+    padding: 50px 5% 20px;
+    margin-top: 0;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.p-aegis-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    font-size: 17px;
+    color: #6B6D6B;
+    line-height: 2;
+}
+
+.img-aegis-footer {
+    height: 40px;
+    width: auto;
+}
+
+.img-aegis-footer, .h1-footer {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.footer-emergencia, .footer-links {
+    flex: 1;
+    min-width: 150px;
+}
+
+
+
+.footer h3 {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 20px
+}
+
+.lista-emergencia-footer {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    line-height: 1.5;
+    color: #9EA5B0;
+    font-weight: bold;
+}
+
+.lista-links-footer {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    line-height: 1.5;
+    color: #9EA5B0;
+    font-weight: bold;
+}
+.lista-links-footer a {
+    text-decoration: none;
+    color: #9EA5B0;
+}
+.lista-links-footer a:hover {
+    color: #fff;
+}
+
+.logo-footer {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-coluna-logo {
+    display: flex;
+    flex-direction: column;
+    margin-right: 200px;
+}
+
+
+.h1-footer {
+    margin: 0;
+    font-size: 20px;
+    color: #fff;
+    line-height: 1;
 }
