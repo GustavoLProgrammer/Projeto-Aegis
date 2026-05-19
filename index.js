@@ -79,6 +79,7 @@ function cadastrarUsuario() {
     listaUsuario.push(novoUsuario);
     localStorage.setItem("usuarios_aegis", JSON.stringify(listaUsuario));
     alert("Usuário cadastrado com sucesso!");
+    window.location.href = "login.html";
 
     document.getElementById("nomeUsu").value = "";
     document.getElementById("emailUsu").value = "";
