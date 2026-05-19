@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto Aegis</title>
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
     <h1>Projeto Aegis</h1>
 
     <div id="tela-login">
+        <img src="imagens/logo_aegis.png" alt="Logo Aegis" class="logo-aegis">
         <h1>Faça seu Login</h1>
+        <p class="email-senha">Email</p>
         <input type="text" name="email" id="emailUsu" placeholder="Seu email">
+        <p class="email-senha">Senha</p>
         <input type="password" name="senha" id="senhaUsu" placeholder="Sua senha">
         <button onclick="fazerLogin()">Entrar</button>
-        <p>Não tem uma conta? <a href="cadastro.html"> Cadastre-se</a></p>
+        <p class="sem-conta">Não tem uma conta? <a href="cadastro.html"> Cadastre-se</a></p>
+        <p class="voltar"><a href="index.html">Voltar para a página inicial</a></p>
     </div>
 
     <div id="interface-user" style="display: none;">

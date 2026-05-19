@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cadastro.css">
     <title>Document</title>
 </head>
 <body>
-    <h1>Cadastro de Usuário</h1>
-    <input type="text" id="nomeUsu" placeholder="Seu nome">
-    <input type="text" name="email" id="emailUsu" placeholder="Seu email">
-    <input type="password" name="senha" id="senhaUsu" placeholder="Sua senha">
-    <button onclick="cadastrarUsuario()">Cadastrar</button>
-    <p> <a href="login.html">Voltar</a> </p>
+
+    <h1>Projeto Aegis</h1>
+    <div class="cadastro-cointainer">
+        <img src="imagens/logo_aegis.png" alt="Logo Aegis" class="logo-aegis">
+        <h1>Crie sua conta</h1>
+        <p>Nome</p>
+        <input class="nome" type="text" id="nomeUsu" placeholder="Seu nome">
+        <p>Email</p>
+        <input class="email" type="text" name="email" id="emailUsu" placeholder="Seu email">
+        <p>Senha</p>
+        <input class="senha" type="password" name="senha" id="senhaUsu" placeholder="Sua senha">
+        <button onclick="cadastrarUsuario()">Cadastrar</button>
+        <p class="com-conta">Já tem uma conta? <a href="login.html"> Entrar</a></p>
+        <p class="voltar"><a href="index.html">Voltar para a página inicial</a></p>
+    </div>
     <script src="index.js"></script>
 </body>
 </html>

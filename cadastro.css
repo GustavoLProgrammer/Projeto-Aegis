@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    color: #333333;
+    margin-bottom: 40px;
+    font-size: 48px;
+    text-align: center;
+}
+
+.logo-aegis {
+    width: 80px;
+    height: auto;
+    display: block;
+    margin: 0 auto 15px auto;
+}
+
+div > h1 {
+    margin-bottom: 20px;
+}
+
+.cadastro-cointainer {
+    padding: 40px;
+    border: 1px solid #DEDEDE;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.cadastro-cointainer h1 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #333333;
+    font-size: 22px;
+}
+
+.cadastro-cointainer, .nome, .email, .senha {
+    text-align: left;
+    margin-top: 2px;
+    font-size: 14px;
+    color: #666666;
+}
+
+.cadastro-cointainer p {
+    margin-top: 0px;
+    font-size: 14px;
+    color: #666666;
+}
+
+.cadastro-cointainer input {
+    width: 100%;
+    padding: 7px;
+    margin-bottom: 15px;
+    border: solid 1px #DEDEDE;
+    border-radius: 4px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.cadastro-cointainer input:focus {
+    border-color: #BB071E;
+}
+
+.cadastro-cointainer button {
+    width: 100%;
+    padding: 6px;
+    background-color: #BB071E;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.cadastro-cointainer button:hover {
+    background-color: #E60A25;
+}
+
+.cadastro-cointainer button:active {
+    transform: scale(0.98);
+}
+
+.cadastro-cointainer a{
+    color: #BB071E;
+    text-decoration: none;
+    font-weight: bolder;
+    transition: color 0.2s ease;
+}
+
+.cadastro-cointainer a:hover {
+    color: #E60A25;
+    text-decoration: underline;
+}
+
+.cadastro-cointainer .com-conta {
+    font-size: 16px;
+    text-align: center;
+}
+
+.cadastro-cointainer .voltar {
+    padding-top: 10px;
+    font-size: 15px;
+    text-align: center;
+}
+
+     .voltar:hover {
+    color: #BB071E;
+    text-decoration: underline;
+    cursor: pointer;
+}
