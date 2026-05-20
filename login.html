@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Aegis</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <h1>Projeto Aegis</h1>
+
+    <div id="tela-login">
+        <img src="imagens/logo_aegis.png" alt="Logo Aegis" class="logo-aegis">
+        <h1>Faça seu Login</h1>
+        <p class="email-senha">Email</p>
+        <input type="text" name="email" id="emailUsu" placeholder="Seu email">
+        <p class="email-senha">Senha</p>
+        <input type="password" name="senha" id="senhaUsu" placeholder="Sua senha">
+        <button onclick="fazerLogin()">Entrar</button>
+        <p class="sem-conta">Não tem uma conta? <a href="cadastro.html"> Cadastre-se</a></p>
+        <p class="voltar"><a href="index.html">Voltar para a página inicial</a></p>
+    </div>
+
+    <div id="interface-user" style="display: none;">
+        <h2>Bem vindo, <span id="span-nome"></span>!</h2>
+        <p>Você está logado na área de visualização pública.</p>
+        <button onclick="deslogar()">Sair</button>
+    </div>
+
+    <div id="interface-dev" style="display: none;">
+        <hr>
+        <h2>Painel do Desenvolvedor</h2>
+        <p>Ferramentas de monitoramento e gerenciamento do sistema liberadas.</p>
+        
+        <div>
+            <h3>Promover Usuário</h3>
+        <h3>Usuários Cadastrados no Sitema</h3>
+        <div id="listaUsuarios"></div>
+        <button onclick="listarUsuarios(this)">Listar Usuários</button>
+        <div id="lista-usuarios"></div>
+        <br>
+        <button onclick="acaoRestrita()">Executar Comando Dev</button>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
