@@ -139,7 +139,7 @@ async function listarUsuarios(botao) {
             let botaoAcao = "";
 
             if (usuario.cargo === "master") {
-                botaoAcao = `<span style="color: #777; font-weight: bold; font-style: italic;">Master Intocável</span>`;
+                botaoAcao = `<span style="color: #777; font-weight: bold; font-style: italic;">Master</span>`;
             } else {
                 if (usuario.cargo === "usuario") {
                     botaoAcao = `<button onclick="promoverPeloEmail('${usuario.email}')" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Promover</button>`;
