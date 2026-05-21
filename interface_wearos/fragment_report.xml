@@ -1,38 +1,81 @@
-<!-- Estrutura básica com os dois botões iniciais -->
+<!-- Estrutura dos botões da interface -->
 
-<LinearLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:gravity="center"> <!-- Centraliza tudo na tela do relógio -->
+import android.os.Bundle
+import android.view.View
+import android.widget.TextView
+import android.widget.Button
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import androidx.fragment.app.Fragment
 
-    <!-- 1. O Título fica no topo -->
-    <TextView
-        android:id="@+id/tvTitulo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="CENTRAL DE AJUDA"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp" />
+class ReportFragment : Fragment(R.layout.fragment_report) {
 
-    <!-- 2. Botão de Emergência logo abaixo -->
-    <Button
-        android:id="@+id/btnEmergencia"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Emergência"
-        android:backgroundTint="#FF0000" />
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        
+        // Elementos da Tela
+        val tvTitulo = view.findViewById<TextView>(R.id.tvTitulo)
+        val btnEmergencia = view.findViewById<Button>(R.id.btnEmergencia)
+        val btnAjuda = view.findViewById<Button>(R.id.btnAjuda)
+        
+        // Botões do Quiz
+        val btnPerseguicao = view.findViewById<Button>(R.id.btnPerseguicao)
+        val btnAgressaoDomestica = view.findViewById<Button>(R.id.btnAgressaoDomestica)
+        val btnAgressao = view.findViewById<Button>(R.id.btnAgressao)
 
-    <!-- 3. Botão de Ajuda por último -->
-    <Button
-        android:id="@+id/btnAjuda"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ajuda"
-        android:backgroundTint="#FF9800" />
+        // GPS simulado capturado automaticamente pelo Wear OS
+        val gpsSimulado = "-23.5505, -46.6333"
 
-</LinearLayout>
+        // Botão Emergência: Envio imediato
+        btnEmergencia.setOnClickListener {
+            tvTitulo.text = "POLÍCIA ACIONADA!\nGPS: $gpsSimulado"
+            btnEmergencia.visibility = GONE
+            btnAjuda.visibility = GONE
+            
+            println("Alerta: Botão de Emergência acionado de forma direta!")
+            // Aqui integrará com o seu Python: registrar_denuncia("Emergência", "Botão de Pânico", gpsSimulado)
+        }
+        
+        // Botão Ajuda: Transiciona a tela para as 3 opções do Quiz
+        btnAjuda.setOnClickListener {
+            tvTitulo.text = "Selecione a Ocorrência:"
+            
+            // Oculta os botões iniciais
+            btnEmergencia.visibility = GONE
+            btnAjuda.visibility = GONE
+            
+            // Exibe as 3 opções solicitadas
+            btnPerseguicao.visibility = VISIBLE
+            btnAgressaoDomestica.visibility = VISIBLE
+            btnAgressao.visibility = VISIBLE
+            
+            println("Quiz de monitoramento iniciado com opções de botões.")
+        }
+
+        // Configuração das ações dos botões do Quiz
+        val encerrarComSucesso = { categoria: String ->
+            tvTitulo.text = "VIATURA ACIONADA!\nTipo: $categoria\nGPS: $gpsSimulado"
+            btnPerseguicao.visibility = GONE
+            btnAgressaoDomestica.visibility = GONE
+            btnAgressao.visibility = GONE
+        }
+
+        btnPerseguicao.setOnClickListener {
+            encerrarComSucesso("Perseguição")
+            println("Alerta enviado: Ajuda -> Perseguição | GPS: $gpsSimulado")
+            // Conexão com Python: registrar_denuncia("Ajuda", "Perseguição", gpsSimulado)
+        }
+
+        btnAgressaoDomestica.setOnClickListener {
+            encerrarComSucesso("Agressão Doméstica")
+            println("Alerta enviado: Ajuda -> Agressão Doméstica | GPS: $gpsSimulado")
+            // Conexão com Python: registrar_denuncia("Ajuda", "Agressão Doméstica", gpsSimulado)
+        }
+
+        btnAgressao.setOnClickListener {
+            encerrarComSucesso("Agressão")
+            println("Alerta enviado: Ajuda -> Agressão | GPS: $gpsSimulado")
+            // Conexão com Python: registrar_denuncia("Ajuda", "Agressão", gpsSimulado)
+        }
+    }
+}
