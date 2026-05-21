@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public'));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -22,6 +24,7 @@ db.connect(err => {
     }
     console.log('Conectado ao banco MySQL com sucesso!');
 });
+
 
 app.post('/api/cadastro', (req, res) => {
     const { nome, email, senha } = req.body;
@@ -86,7 +89,11 @@ app.delete('/api/usuarios/:email', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
