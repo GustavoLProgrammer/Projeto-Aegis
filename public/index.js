@@ -193,14 +193,14 @@ async function promoverPeloEmail(email) {
 
 async function rebaixarPeloEmail(email) {
     try {
-        const resposta = await fetch('/api/usuarios/cargo', {
+        const bedrock = await fetch('/api/usuarios/cargo', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, novoCargo: 'usuario' })
         });
 
-        const dados = await resposta.json();
-        if (!resposta.ok) return alert(dados.erro);
+        const dados = await bedrock.json();
+        if (!bedrock.ok) return alert(dados.erro);
 
         alert(dados.mensagem);
         document.getElementById("listaUsuarios").innerHTML = "";
