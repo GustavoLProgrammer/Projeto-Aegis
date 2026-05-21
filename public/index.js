@@ -10,7 +10,7 @@ async function fazerLogin() {
     }
 
     try {
-        const resposta = await fetch('https://projeto-aegis.onrender.com/api/login', {
+        const resposta = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, senha })
@@ -62,7 +62,7 @@ async function cadastrarUsuario() {
     }
 
     try {
-        const resposta = await fetch('https://projeto-aegis.onrender.com/api/cadastro', {
+        const resposta = await fetch('/api/cadastro', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, email, senha })
@@ -105,7 +105,7 @@ async function listarUsuarios(botao) {
     if (botao) botao.innerText = "Ocultar Lista";
 
     try {
-        const resposta = await fetch('https://projeto-aegis.onrender.com/api/usuarios');
+        const resposta = await fetch('/api/usuarios');
         const listaUsuario = await resposta.json();
 
         if (!resposta.ok) {
@@ -174,7 +174,7 @@ async function listarUsuarios(botao) {
 
 async function promoverPeloEmail(email) {
     try {
-        const resposta = await fetch('https://projeto-aegis.onrender.com/api/usuarios/cargo', {
+        const resposta = await fetch('/api/usuarios/cargo', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, novoCargo: 'dev' })
@@ -193,7 +193,7 @@ async function promoverPeloEmail(email) {
 
 async function rebaixarPeloEmail(email) {
     try {
-        const resposta = await fetch('https://projeto-aegis.onrender.com/api/usuarios/cargo', {
+        const resposta = await fetch('/api/usuarios/cargo', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, novoCargo: 'usuario' })
@@ -216,7 +216,7 @@ async function removerPeloEmail(email) {
     }
 
     try {
-        const resposta = await fetch(`https://projeto-aegis.onrender.com/api/usuarios/${email}`, {
+        const resposta = await fetch(`/api/usuarios/${email}`, {
             method: 'DELETE'
         });
 
