@@ -1,6 +1,6 @@
 let cargoAtual = "";
 
-function fazerLogin() { 
+async function fazerLogin() { 
     const email = document.getElementById("emailUsu").value.trim();
     const senha = document.getElementById("senhaUsu").value.trim();
 
@@ -9,31 +9,33 @@ function fazerLogin() {
         return;
     }
 
-    let listaUsuario = localStorage.getItem("usuarios_aegis");
+    try {
+        const resposta = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
+        });
+        
+        const dados = await resposta.json();
 
-    listaUsuario = JSON.parse(listaUsuario);
+        if (!resposta.ok) {
+            alert(dados.erro);
+            return;
+        }
 
-    if (listaUsuario == null) {
-        alert("Nenhum usuário cadastrado. Por favor, cadastre-se primeiro.");
-        return;
-    }
+        cargoAtual = dados.cargo;
 
-    let usuarioAchado = listaUsuario.find(u => u.email === email && u.senha === senha);
+        document.getElementById("tela-login").style.display = "none";
+        document.getElementById("interface-user").style.display = "block";
+        document.getElementById("span-nome").innerText = dados.nome;
 
-    if (usuarioAchado === undefined) {
-        alert("Usuário não encontrado. Por favor, cadastre-se primeiro.");
-        return;
-    }
+        if (cargoAtual === "dev" || cargoAtual === "master") {
+            document.getElementById("interface-dev").style.display = "block";
+            alert("Modo Desenvolvedor Ativado!");
+        }
 
-    cargoAtual = usuarioAchado.cargo;
-
-    document.getElementById("tela-login").style.display = "none";
-    document.getElementById("interface-user").style.display = "block";
-    document.getElementById("span-nome").innerText = usuarioAchado.nome;
-
-    if (cargoAtual === "dev") {
-        document.getElementById("interface-dev").style.display = "block";
-        alert("Modo Desenvolvedor Ativado!");
+    } catch (erro) {
+        alert("Erro ao conectar com o servidor back-end.");
     }
 }
 
@@ -42,54 +44,52 @@ function deslogar() {
 }
 
 function acaoRestrita() {
-    if (cargoAtual === "dev") {
+    if (cargoAtual === "dev" || cargoAtual === "master") {
         alert("Acesso autorizado: Alterando configurações do sistema...");
     } else {
         alert("Erro: Área restrita a desenvolvedores.");
     }
 }
 
-function cadastrarUsuario() {
-    let nome = document.getElementById("nomeUsu").value;
-    let email= document.getElementById("emailUsu").value;
-    let senha = document.getElementById("senhaUsu").value;
+async function cadastrarUsuario() {
+    let nome = document.getElementById("nomeUsu").value.trim();
+    let email = document.getElementById("emailUsu").value.trim();
+    let senha = document.getElementById("senhaUsu").value.trim();
 
     if (nome === "" || email === "" || senha === "") {
         alert("Por favor, preencha todos os campos para se cadastrar.");
         return;
     }
 
-    let listaUsuario = localStorage.getItem("usuarios_aegis");
+    try {
+        const resposta = await fetch('http://localhost:3000/api/cadastro', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, email, senha })
+        });
+        
+        const dados = await resposta.json();
 
-    if (listaUsuario == null) {
-        listaUsuario = [
-        {nome: "Admin", email: "admin@aegis.com", senha: "admin123", cargo: "dev"}
-        ];
-    } else {
-        listaUsuario = JSON.parse(listaUsuario);
+        if (!resposta.ok) {
+            alert(dados.erro);
+            return;
+        }
+
+        alert(dados.mensagem);
+        window.location.href = "login.html";
+
+        document.getElementById("nomeUsu").value = "";
+        document.getElementById("emailUsu").value = "";
+        document.getElementById("senhaUsu").value = "";
+
+    } catch (erro) {
+        alert("Erro ao conectar com o servidor back-end.");
     }
-
-    let novoUsuario = {
-        nome: nome,
-        email: email,
-        senha: senha,
-        cargo: "usuario"
-    };
-
-    listaUsuario.push(novoUsuario);
-    localStorage.setItem("usuarios_aegis", JSON.stringify(listaUsuario));
-    alert("Usuário cadastrado com sucesso!");
-    window.location.href = "login.html";
-
-    document.getElementById("nomeUsu").value = "";
-    document.getElementById("emailUsu").value = "";
-    document.getElementById("senhaUsu").value = "";
 }
 
-
-function listarUsuarios(botao) {
-    if (cargoAtual !== "dev") {
-        alert("Erro: Apenas desenvolvedores podem listar usuários.");
+async function listarUsuarios(botao) {
+    if (cargoAtual !== "dev" && cargoAtual !== "master") {
+        alert("Erro: Apenas desenvolvedores ou administradores podem listar usuários.");
         return;
     }
 
@@ -104,16 +104,22 @@ function listarUsuarios(botao) {
     divLista.style.display = "block";
     if (botao) botao.innerText = "Ocultar Lista";
 
-    let listaUsuario = localStorage.getItem("usuarios_aegis");
-    listaUsuario = JSON.parse(listaUsuario);
+    try {
+        const resposta = await fetch('http://localhost:3000/api/usuarios');
+        const listaUsuario = await resposta.json();
 
-    if (listaUsuario == null || listaUsuario.length === 0) {
-        document.getElementById("listaUsuarios").innerHTML = "<p>Nenhum usuário encontrado.</p>";
-        return;
-    }
+        if (!resposta.ok) {
+            divLista.innerHTML = "<p>Erro ao carregar usuários.</p>";
+            return;
+        }
 
-    let estruturaHtml = `
-    <table border="1" style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 10px;">
+        if (listaUsuario.length === 0) {
+            divLista.innerHTML = "<p>Nenhum usuário encontrado.</p>";
+            return;
+        }
+
+        let estruturaHtml = `
+        <table border="1" style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 10px;">
             <thead>
                 <tr style="background-color: #ddd; color: black;">
                     <th style="padding: 8px;">Nome</th>
@@ -123,83 +129,104 @@ function listarUsuarios(botao) {
                 </tr>
             </thead>
             <tbody>
-    ` ;
+        `;
 
-    listaUsuario.forEach(usuario => {
-        let corCargo = usuario.cargo === "dev" ? "green" : "blue";
-        let botaoAcao = "";
+        listaUsuario.forEach(usuario => {
+            let corCargo = "blue"; 
+            if (usuario.cargo === "dev") corCargo = "green";
+            if (usuario.cargo === "master") corCargo = "purple";
 
-        if (usuario.email === "admin@aegis.com") {
-            botaoAcao = `<span>Master</span>`;
-        } else {
-            if (usuario.cargo === "usuario") {
-                botaoAcao = `<button onclick="promoverPeloEmail('${usuario.email}')" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Promover</button>`;
+            let botaoAcao = "";
+
+            if (usuario.cargo === "master") {
+                botaoAcao = `<span style="color: #777; font-weight: bold; font-style: italic;">Master Intocável</span>`;
             } else {
-                botaoAcao = `<button onclick="rebaixarPeloEmail('${usuario.email}')" style="background-color: orange; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Rebaixar</button>`;
+                if (usuario.cargo === "usuario") {
+                    botaoAcao = `<button onclick="promoverPeloEmail('${usuario.email}')" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Promover</button>`;
+                } else {
+                    botaoAcao = `<button onclick="rebaixarPeloEmail('${usuario.email}')" style="background-color: orange; color: white; border: none; padding: 5px 10px; cursor: pointer; margin-right: 5px;">Rebaixar</button>`;
+                }
+
+                botaoAcao += `<button onclick="removerPeloEmail('${usuario.email}')" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">Remover</button>`;
             }
 
-            botaoAcao += `<button onclick="removerPeloEmail('${usuario.email}')" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">Remover</button>`;
-        }
-
+            estruturaHtml += `
+            <tr style="background-color: #fff; color: black">
+                <td style="padding: 8px;">${usuario.nome}</td>
+                <td style="padding: 8px;">${usuario.email}</td>
+                <td style="padding: 8px; color: ${corCargo}; font-weight: bold;">${usuario.cargo}</td>
+                <td style="padding: 8px;">${botaoAcao}</td>
+            </tr>
+            `;
+        });
 
         estruturaHtml += `
-        <tr style="background-color: #fff; color: black">
-            <td style="padding: 8px;">${usuario.nome}</td>
-            <td style="padding: 8px;">${usuario.email}</td>
-            <td style="padding: 8px; color: ${corCargo}; font-weight: bold;">${usuario.cargo}</td>
-            <td style="padding: 8px;">${botaoAcao}</td>
-        </tr>
+            </tbody>
+        </table>
         `;
-    });
 
-    estruturaHtml += `
-        </tbody>
-    </table>
-    `;
+        divLista.innerHTML = estruturaHtml;
 
-    document.getElementById("listaUsuarios").innerHTML = estruturaHtml;
-}
-
-function promoverPeloEmail(email) {
-    let listaUsuario = JSON.parse(localStorage.getItem("usuarios_aegis"));
-    let usuarioEncontrado = listaUsuario.find(u => u.email === email);
-
-    if (usuarioEncontrado) {
-        usuarioEncontrado.cargo = "dev";
-        localStorage.setItem("usuarios_aegis", JSON.stringify(listaUsuario));
-        alert(`Usuário ${usuarioEncontrado.nome} promovido a Desenvolvedor com sucesso!`);
-
-        document.getElementById("listaUsuarios").innerHTML = "";
-        listarUsuarios();
+    } catch (erro) {
+        alert("Erro ao conectar com o servidor para listar usuários.");
     }
 }
 
-function rebaixarPeloEmail(email) {
-    let listaUsuario = JSON.parse(localStorage.getItem("usuarios_aegis"));
-    let usuarioEncontrado = listaUsuario.find(u => u.email === email);
+async function promoverPeloEmail(email) {
+    try {
+        const resposta = await fetch('http://localhost:3000/api/usuarios/cargo', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, novoCargo: 'dev' })
+        });
 
-    if (usuarioEncontrado) {
-        usuarioEncontrado.cargo = "usuario";
-        localStorage.setItem("usuarios_aegis", JSON.stringify(listaUsuario));
-        alert(`Usuário ${usuarioEncontrado.nome} rebaixado a Usuário com sucesso!`);
+        const dados = await resposta.json();
+        if (!resposta.ok) return alert(dados.erro);
 
+        alert(dados.mensagem);
         document.getElementById("listaUsuarios").innerHTML = "";
         listarUsuarios();
+    } catch (erro) {
+        alert("Erro ao conectar com o servidor.");
     }
 }
 
-function removerPeloEmail(email) {
+async function rebaixarPeloEmail(email) {
+    try {
+        const resposta = await fetch('http://localhost:3000/api/usuarios/cargo', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, novoCargo: 'usuario' })
+        });
+
+        const dados = await resposta.json();
+        if (!resposta.ok) return alert(dados.erro);
+
+        alert(dados.mensagem);
+        document.getElementById("listaUsuarios").innerHTML = "";
+        listarUsuarios();
+    } catch (erro) {
+        alert("Erro ao conectar com o servidor.");
+    }
+}
+
+async function removerPeloEmail(email) {
     if (!confirm(`Tem certeza que deseja remover o usuário com e-mail ${email}?`)) {
         return;
     }
 
-    let listaUsuario = JSON.parse(localStorage.getItem("usuarios_aegis"));
+    try {
+        const resposta = await fetch(`http://localhost:3000/api/usuarios/${email}`, {
+            method: 'DELETE'
+        });
 
-    let listaAtualizada = listaUsuario.filter(u => u.email !== email);
+        const dados = await resposta.json();
+        if (!resposta.ok) return alert(dados.erro);
 
-    localStorage.setItem("usuarios_aegis", JSON.stringify(listaAtualizada));
-    alert("Usuário removido com sucesso!");
-
-    document.getElementById("listaUsuarios").innerHTML = "";
-    listarUsuarios();
+        alert(dados.mensagem);
+        document.getElementById("listaUsuarios").innerHTML = "";
+        listarUsuarios();
+    } catch (erro) {
+        alert("Erro ao conectar com o servidor.");
+    }
 }
