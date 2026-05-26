@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Aegis - Painel de Controle GPS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    
+    <style>
+        /* Define que o mapa ocupará 85% do espaço de exibição vertical do monitor */
+        #map { height: 85vh; width: 100%; }
+        /* Layout superior da barra de comando tático da central de polícia */
+        #painel-comando { padding: 15px; background: #222; color: #fff; font-family: sans-serif; }
+        button { padding: 10px 15px; background: #BB071E; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        button:hover { background: #900514; }
+    </style>
+</head>
+<body>
+
+    <div id="painel-comando">
+        <h2>Central de Monitoramento Aegis - Painel Geral de GPS</h2>
+        <button onclick="ativarAlertaManual()">Registrar Alerta Manual na Central</button>
+        <span id="status-painel" style="margin-left: 15px; color: #aaa;">Aguardando transmissões dos Smartwatches...</span>
+    </div>
+    
+    <div id="map"></div>
+
+    <script>
+        // Inicializa a visualização do mapa focando em São Paulo com aproximação de zoom em nível 13
+        const map = L.map('map').setView([-23.55052, -46.633308], 13);
+        
+        // Conecta ao servidor público do OpenStreetMap para carregar as imagens das ruas (tiles)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© Colaboradores do OpenStreetMap'
+        }).addTo(map);
+
+        // Inicializa o ouvinte WebSocket baseado no Socket.IO do back-end
+        const socket = io();
+        let alertaManualAtivo = false; // Controle lógico para verificar o clique no botão de despacho da central
+
+        // Executada assim que o operador clica no botão superior de Alerta Manual
+        function ativarAlertaManual() {
+            alertaManualAtivo = true;
+            document.getElementById('status-painel').innerText = "Clique no mapa para marcar o local do chamado de emergência...";
+            document.getElementById('status-painel').style.color = "#FFCC00";
+        }
+
+        // CAPTURA DE CLIQUE: Escuta ativa do motor do Leaflet para cliques físicos na tela geográfica
+        map.on('click', function(evento) {
+            // Se o botão da central estiver ativo, o ponto clicado vira um registro de emergência
+            if (alertaManualAtivo) {
+                const latitudeClicada = evento.latlng.lat;   // Captura a latitude numérica exata do clique
+                const longitudeClicada = evento.latlng.lng; // Captura a longitude numérica exata do clique
+                
+                // Formata o carimbo de horário local do terminal da central
+                const horaAtual = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                // Emite o pacote via Socket.IO para propagação e salvamento no servidor
+                socket.emit('novo_pedido_ajuda', { 
+                    lat: latitudeClicada, 
+                    lng: longitudeClicada, 
+                    horario: horaAtual, 
+                    tipo: "Alerta Manual da Central" 
+                });
+                
+                alertaManualAtivo = false; // Bloqueia o botão novamente para evitar cliques indesejados subsequentes
+                document.getElementById('status-painel').innerText = "Alerta de mesa despachado para as viaturas!";
+                document.getElementById('status-painel').style.color = "#00FF00";
+            }
+        });
+
+        // ESCUTA EM TEMPO REAL: Acionada no exato momento em que o Smartwatch envia dados salvos no banco
+        socket.on('fixar_sos_no_mapa', function(dadosRecebidos) {
+            // Desenha um pino vermelho marcador na tela usando as coordenadas lat/lng transmitidas
+            const marcadorPolicial = L.marker([dadosRecebidos.lat, dadosRecebidos.lng]).addTo(map);
+            
+            // Renderiza um balão (popup) de texto descritivo amarrado diretamente em cima do pino do mapa
+            marcadorPolicial.bindPopup(`
+                <div style="font-family: Arial, sans-serif;">
+                    <b style="color: #BB071E;"> ALERTA DE EMERGÊNCIA DISPARADO</b><br>
+                    <b>Origem:</b> Smartwatch Wear OS<br>
+                    <b>Tipo:</b> ${dadosRecebidos.tipo}<br>
+                    <b>Categoria:</b> ${dadosRecebidos.categoria}<br>
+                    <b>Horário do Acionamento:</b> ${dadosRecebidos.horario}
+                </div>
+            `).openPopup(); // Força a abertura automática do balão de alerta na tela
+        });
+    </script>
+</body>
+</html>
