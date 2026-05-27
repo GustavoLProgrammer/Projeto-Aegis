@@ -2,91 +2,84 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Aegis - Painel de Controle GPS</title>
+    <title>Painel GPS - Monitoramento</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    
     <style>
-        /* Define que o mapa ocupará 85% do espaço de exibição vertical do monitor */
         #map { height: 85vh; width: 100%; }
-        /* Layout superior da barra de comando tático da central de polícia */
-        #painel-comando { padding: 15px; background: #222; color: #fff; font-family: sans-serif; }
-        button { padding: 10px 15px; background: #BB071E; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        button:hover { background: #900514; }
+        #painel-ajuda { padding: 12px; background: #f4f4f4; font-family: Arial, sans-serif; border-bottom: 1px solid #ccc; }
+        button { padding: 10px 15px; background: #ff4d4d; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        button:hover { background: #cc0000; }
     </style>
 </head>
 <body>
 
-    <div id="painel-comando">
-        <h2>Central de Monitoramento Aegis - Painel Geral de GPS</h2>
-        <button onclick="ativarAlertaManual()">Registrar Alerta Manual na Central</button>
-        <span id="status-painel" style="margin-left: 15px; color: #aaa;">Aguardando transmissões dos Smartwatches...</span>
+    <div id="painel-ajuda">
+        <button onclick="ativarModoSOS()"> Solicitar Ajuda no Mapa</button>
+        <span id="status" style="margin-left: 15px; font-weight: bold;">Clique no botão e depois selecione o ponto no mapa.</span>
     </div>
     
     <div id="map"></div>
 
     <script>
-        // Inicializa a visualização do mapa focando em São Paulo com aproximação de zoom em nível 13
         const map = L.map('map').setView([-23.55052, -46.633308], 13);
         
-        // Conecta ao servidor público do OpenStreetMap para carregar as imagens das ruas (tiles)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© Colaboradores do OpenStreetMap'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Inicializa o ouvinte WebSocket baseado no Socket.IO do back-end
         const socket = io();
-        let alertaManualAtivo = false; // Controle lógico para verificar o clique no botão de despacho da central
+        let modoSOS = false;
 
-        // Executada assim que o operador clica no botão superior de Alerta Manual
-        function ativarAlertaManual() {
-            alertaManualAtivo = true;
-            document.getElementById('status-painel').innerText = "Clique no mapa para marcar o local do chamado de emergência...";
-            document.getElementById('status-painel').style.color = "#FFCC00";
+        function ativarModoSOS() {
+            modoSOS = true;
+            document.getElementById('status').innerText = " Modo SOS ativo! Clique em um local no mapa...";
+            document.getElementById('status').style.color = "red";
         }
 
-        // CAPTURA DE CLIQUE: Escuta ativa do motor do Leaflet para cliques físicos na tela geográfica
-        map.on('click', function(evento) {
-            // Se o botão da central estiver ativo, o ponto clicado vira um registro de emergência
-            if (alertaManualAtivo) {
-                const latitudeClicada = evento.latlng.lat;   // Captura a latitude numérica exata do clique
-                const longitudeClicada = evento.latlng.lng; // Captura a longitude numérica exata do clique
-                
-                // Formata o carimbo de horário local do terminal da central
-                const horaAtual = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        map.on('click', function(e) {
+            if (modoSOS) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                const horario = new Date().toLocaleTimeString('pt-BR');
 
-                // Emite o pacote via Socket.IO para propagação e salvamento no servidor
-                socket.emit('novo_pedido_ajuda', { 
-                    lat: latitudeClicada, 
-                    lng: longitudeClicada, 
-                    horario: horaAtual, 
-                    tipo: "Alerta Manual da Central" 
-                });
-                
-                alertaManualAtivo = false; // Bloqueia o botão novamente para evitar cliques indesejados subsequentes
-                document.getElementById('status-painel').innerText = "Alerta de mesa despachado para as viaturas!";
-                document.getElementById('status-painel').style.color = "#00FF00";
+                document.getElementById('status').innerText = "Identificando endereço do local...";
+                document.getElementById('status').style.color = "orange";
+
+                // Busca o nome da rua baseado na latitude e longitude
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const enderecoCompleto = data.display_name || "Endereço não mapeado";
+
+                        socket.emit('novo_pedido_ajuda', { 
+                            lat: lat, 
+                            lng: lng, 
+                            endereco: enderecoCompleto, 
+                            horario: horario 
+                        });
+                        
+                        modoSOS = false;
+                        document.getElementById('status').innerText = " Alerta de ajuda enviado!";
+                        document.getElementById('status').style.color = "green";
+                    })
+                    .catch(err => {
+                        socket.emit('novo_pedido_ajuda', { lat: lat, lng: lng, endereco: "Endereço indisponível", horario: horario });
+                        modoSOS = false;
+                        document.getElementById('status').innerText = " Alerta enviado (Sem endereço).";
+                        document.getElementById('status').style.color = "green";
+                    });
             }
         });
 
-        // ESCUTA EM TEMPO REAL: Acionada no exato momento em que o Smartwatch envia dados salvos no banco
-        socket.on('fixar_sos_no_mapa', function(dadosRecebidos) {
-            // Desenha um pino vermelho marcador na tela usando as coordenadas lat/lng transmitidas
-            const marcadorPolicial = L.marker([dadosRecebidos.lat, dadosRecebidos.lng]).addTo(map);
-            
-            // Renderiza um balão (popup) de texto descritivo amarrado diretamente em cima do pino do mapa
-            marcadorPolicial.bindPopup(`
-                <div style="font-family: Arial, sans-serif;">
-                    <b style="color: #BB071E;"> ALERTA DE EMERGÊNCIA DISPARADO</b><br>
-                    <b>Origem:</b> Smartwatch Wear OS<br>
-                    <b>Tipo:</b> ${dadosRecebidos.tipo}<br>
-                    <b>Categoria:</b> ${dadosRecebidos.categoria}<br>
-                    <b>Horário do Acionamento:</b> ${dadosRecebidos.horario}
-                </div>
-            `).openPopup(); // Força a abertura automática do balão de alerta na tela
+        socket.on('fixar_sos_no_mapa', function(data) {
+            const marcadorSOS = L.marker([data.lat, data.lng]).addTo(map);
+            marcadorSOS.bindPopup(`
+                <b> SOLICITAÇÃO SOS</b><br>
+                <b>Horário:</b> ${data.horario}<br>
+                <b>Local:</b> ${data.endereco}
+            `).openPopup();
         });
     </script>
 </body>
