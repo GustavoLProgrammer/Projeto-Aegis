@@ -4,6 +4,11 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 
+// MÓDULOS ADICIONADOS PARA O MAPA E PROCESSO PYTHON
+const http = require('http');
+const { Server } = require('socket.io');
+const { spawn } = require('child_process');
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -12,8 +17,65 @@ app.use((req, res, next) => {
     console.log(`[${req.method}] ${req.url}`);
     next();
 });
+// Servidor integrado HTTP + Socket.io para comunicação em tempo real
+const server = http.createServer(app);
+const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Rota criada para abrir o painel de GPS no navegador
+app.get('/central/gps', (req, res) => {
+    res.sendFile(path.join(__dirname, 'central_monitoramento', 'painel_gps.html'));
+});
+
+// ROTA DO SMARTWATCH AEGIS 
+app.post('/api/smartwatch/alerta', async (req, res) => {
+    const { tipo, opcao_ajuda, sigilo, gps } = req.body; 
+    
+    if (!tipo || !gps) {
+        return res.status(400).json({ erro: 'Dados obrigatórios do alerta estão ausentes.' });
+    }
+
+    console.log(`Alerta Smartwatch! Tipo: ${tipo} | Opção: ${opcao_ajuda} | Sigilo: ${sigilo} | GPS: ${gps}`);
+
+    let enderecoReal = "Endereço indisponível";
+    const [lat, lng] = gps.split(',');
+
+    try {
+        // Consulta a API Nominatim para traduzir as coordenadas GPS em Nome da Rua e Número
+        const urlFetch = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat.trim()}&lon=${lng.trim()}`;
+        const response = await fetch(urlFetch, { headers: { 'User-Agent': 'Aegis-Smartwatch-App' } });
+        const data = await response.json();
+        enderecoReal = data.display_name || "Endereço não localizado";
+    } catch (err) {
+        console.error("Erro ao traduzir GPS em endereço:", err);
+    }
+
+    // Executa o processador Python 
+    const pythonProcess = spawn('python3', [
+        path.join(__dirname, 'backend_python', 'processador_denuncia.py'),
+        tipo,
+        `${opcao_ajuda} (Sigilo: ${sigilo})`,
+        gps,
+        enderecoReal
+    ]);
+
+    pythonProcess.stdout.on('data', (result) => {
+        console.log(`Retorno do Python (Smartwatch): ${result.toString()}`);
+    });
+
+    // Envia o ponto traduzido em tempo real para plotar no mapa da central
+    io.emit('fixar_sos_no_mapa', {
+        tipo: tipo,
+        categoria: `${opcao_ajuda} - Sigilo: ${sigilo}`,
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+        endereco: enderecoReal,
+        horario: new Date().toLocaleTimeString('pt-BR')
+    });
+
+    res.status(200).json({ mensagem: 'Alerta processado com sucesso e viatura acionada!' });
+});
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -28,6 +90,27 @@ db.connect(err => {
         return;
     }
     console.log('Conectado ao banco MySQL com sucesso!');
+});
+
+// INTEGRAÇÃO COM O PROCESSO DO MAPA MANUAL 
+io.on('connection', (socket) => {
+    socket.on('novo_pedido_ajuda', (data) => {
+        const gpsString = `${data.lat}, ${data.lng}`;
+
+        const pythonProcess = spawn('python3', [
+            path.join(__dirname, 'backend_python', 'processador_denuncia.py'),
+            'SOS',
+            'Segurança',
+            gpsString,
+            data.endereco
+        ]);
+
+        pythonProcess.stdout.on('data', (result) => {
+            console.log(`Retorno do Python (Manual): ${result.toString()}`);
+        });
+
+        io.emit('fixar_sos_no_mapa', data);
+    });
 });
 
 app.post('/api/cadastro', (req, res) => {
@@ -220,6 +303,8 @@ app.get(/.*/, (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
+// Rodando o servidor através do escopo HTTP do Socket.io
+server.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
+
