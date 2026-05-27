@@ -8,6 +8,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use((req, res, next) => {
+    console.log(`[${req.method}] ${req.url}`);
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 const db = mysql.createConnection({
@@ -25,16 +30,16 @@ db.connect(err => {
     console.log('Conectado ao banco MySQL com sucesso!');
 });
 
-
 app.post('/api/cadastro', (req, res) => {
-    const { nome, email, senha } = req.body;
-    
-    const query = "INSERT INTO usuarios (nome, email, senha, cargo) VALUES (?, ?, ?, 'usuario')";
-    db.query(query, [nome, email, senha], (err, result) => {
+    const { nome, email, senha, cpf, telefone, cep, endereco } = req.body;
+
+    const query = "INSERT INTO usuarios (nome, email, senha, cpf, telefone, cep, endereco, cargo) VALUES (?, ?, ?, ?, ?, ?, ?, 'usuario')";
+    db.query(query, [nome, email, senha, cpf, telefone, cep, endereco], (err, result) => {
         if (err) {
             if (err.code === 'ER_DUP_ENTRY') {
                 return res.status(400).json({ erro: 'Este e-mail já está cadastrado.' });
             }
+            console.error('Erro ao inserir no MySQL:', err);
             return res.status(500).json({ erro: 'Erro ao salvar no banco.' });
         }
         res.status(201).json({ mensagem: 'Usuário cadastrado com sucesso!' });
@@ -47,17 +52,138 @@ app.post('/api/login', (req, res) => {
     const query = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
     db.query(query, [email, senha], (err, results) => {
         if (err) return res.status(500).json({ erro: 'Erro no servidor.' });
-        
+
         if (results.length === 0) {
             return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
         }
 
         const usuario = results[0];
+
         res.json({
             nome: usuario.nome,
             email: usuario.email,
-            cargo: usuario.cargo
+            cargo: usuario.cargo,
+            cpf: usuario.cpf,
+            telefone: usuario.telefone,
+            cep: usuario.cep,
+            endereco: usuario.endereco
         });
+    });
+});
+
+app.post('/api/denuncias', (req, res) => {
+    const { nome, cpf, telefone, email, cep, endereco, tipoOcorrencia, modoViatura, anonima } = req.body;
+    
+    const v_nome = nome || 'Anônimo';
+    const v_cpf = cpf || null;
+    const v_telefone = telefone || null;
+    const v_email = email || null;
+    const v_cep = (cep && cep !== 'Não informado') ? cep : null;
+    const v_endereco = endereco || 'Localização não informada';
+    const v_tipo = tipoOcorrencia || 'Emergência Geral';
+    const v_modo = modoViatura || 'Silencioso';
+    const v_anonima = anonima !== undefined ? anonima : 1;
+
+    const query = `
+        INSERT INTO denuncias 
+        (nome, cpf, telefone, email, cep, endereco, tipo_ocorrencia, modo_viatura, anonima, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pendente')
+    `;
+
+    db.query(
+        query,
+        [v_nome, v_cpf, v_telefone, v_email, v_cep, v_endereco, v_tipo, v_modo, v_anonima],
+        (err, result) => {
+            if (err) {
+                console.error('ERRO REAL NO TERMINAL DO VS CODE:', err);
+                return res.status(500).json({ erro: 'Erro interno ao salvar o chamado de emergência.' });
+            }
+
+            res.status(201).json({
+                mensagem: 'Denúncia registrada e viatura despachada!',
+                idDenuncia: result.insertId
+            });
+        }
+    );
+});
+
+app.get('/api/denuncias', (req, res) => {
+    const query = "SELECT * FROM denuncias ORDER BY id DESC";
+    db.query(query, (err, results) => {
+        if (err) return res.status(500).json({ erro: 'Erro ao listar denúncias.' });
+        res.json(results);
+    });
+});
+
+app.put('/api/denuncias/:id/status', (req, res) => {
+    const id = req.params.id;
+    const { novoStatus, observacoes } = req.body;
+
+    const query = "UPDATE denuncias SET status = ?, observacoes = ? WHERE id = ?";
+    db.query(query, [novoStatus, observacoes, id], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ erro: 'Erro ao atualizar dados da ocorrência.' });
+        }
+        res.json({ mensagem: 'Ocorrência atualizada com sucesso!' });
+    });
+});
+
+app.get('/api/denuncias/:id/mensagens', (req, res) => {
+    const denunciaId = req.params.id;
+
+    const query = "SELECT * FROM mensagens_denuncia WHERE denuncia_id = ? ORDER BY data_envio ASC";
+    db.query(query, [denunciaId], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar mensagens:', err);
+            return res.status(500).json({ erro: "Erro ao carregar mensagens." });
+        }
+        res.json(results);
+    });
+});
+
+app.post('/api/denuncias/:id/mensagens', (req, res) => {
+    const denunciaId = req.params.id;
+    const { remetente, texto } = req.body;
+
+    if (!texto || texto.trim() === "") {
+        return res.status(400).json({ erro: "O texto da mensagem não pode ser vazio." });
+    }
+
+    const query = "INSERT INTO mensagens_denuncia (denuncia_id, remetente, texto) VALUES (?, ?, ?)";
+    db.query(query, [denunciaId, remetente, texto], (err, result) => {
+        if (err) {
+            console.error('Erro ao salvar mensagem:', err);
+            return res.status(500).json({ erro: "Erro ao enviar mensagem." });
+        }
+        res.status(201).json({ mensagem: "Mensagem enviada com sucesso!" });
+    });
+});
+
+app.get('/api/denuncias/:id', (req, res) => {
+    const id = req.params.id;
+    const solicitante = req.query.solicitante;
+
+    const query = "SELECT * FROM denuncias WHERE id = ?";
+    db.query(query, [id], (err, results) => {
+        if (err) return res.status(500).json({ erro: 'Erro ao buscar o protocolo.' });
+        if (results.length === 0) return res.status(404).json({ erro: 'Protocolo não encontrado.' });
+
+        const denuncia = results[0];
+
+        if (denuncia.anonima === 1) {
+            return res.json(denuncia);
+        }
+
+        if (solicitante && solicitante !== "anonimo") {
+            return res.json(denuncia);
+        }
+
+        if (solicitante && denuncia.cpf === solicitante) {
+            return res.json(denuncia);
+        }
+
+        return res.status(403).json({ erro: 'Acesso negado. Faça login para acompanhar esta ocorrência.' });
     });
 });
 
@@ -69,9 +195,9 @@ app.get('/api/usuarios', (req, res) => {
     });
 });
 
-app.put('/api/usuarios/cargo', (req , res) => {
+app.put('/api/usuarios/cargo', (req, res) => {
     const { email, novoCargo } = req.body;
-    
+
     const query = "UPDATE usuarios SET cargo = ? WHERE email = ?";
     db.query(query, [novoCargo, email], (err, results) => {
         if (err) return res.status(500).json({ erro: 'Erro ao atualizar cargo.' });

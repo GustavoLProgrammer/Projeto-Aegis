@@ -1,3 +1,6 @@
+/* ==========================================================================
+   CONFIGURAÇÕES GERAIS E ESTRUTURA BASE (PADRÃO CLARO)
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -10,13 +13,17 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #F2F2F2;
+    color: #333333;
 }
 
 h1 {
     color: #333333;
     margin-bottom: 40px;
     font-size: 48px;
+    text-align: center;
 }
 
 .logo-aegis {
@@ -28,6 +35,9 @@ div > h1 {
     margin-bottom: 20px;
 }
 
+/* ==========================================================================
+   TELA DE LOGIN
+   ========================================================================== */
 #tela-login {
     padding: 40px;
     border: 1px solid #DEDEDE;
@@ -36,6 +46,7 @@ div > h1 {
     width: 100%;
     max-width: 450px;
     text-align: center;
+    background-color: #ffffff;
 }
 
 #tela-login h1 {
@@ -66,6 +77,8 @@ div > h1 {
     border-radius: 4px;
     font-size: 15px;
     outline: none;
+    background-color: #ffffff;
+    color: #333333;
     transition: border-color 0.2s ease;
 }
 
@@ -95,7 +108,7 @@ div > h1 {
     transform: scale(0.98);
 }
 
-#tela-login a{
+#tela-login a {
     color: #BB071E;
     text-decoration: none;
     font-weight: bolder;
@@ -106,7 +119,6 @@ div > h1 {
     color: #E60A25;
     text-decoration: underline;
 }
-
 
 #tela-login .sem-conta {
     font-size: 16px;
@@ -121,4 +133,670 @@ div > h1 {
     color: #BB071E;
     text-decoration: underline;
     cursor: pointer;
+}
+
+/* ==========================================================================
+   PAINEL DO USUÁRIO LOGADO (#interface-user)
+   ========================================================================== */
+#interface-user {
+    background-color: #ffffff;
+    max-width: 800px;
+    width: 100%;
+    margin: 40px auto;
+    padding: 40px;
+    border-radius: 8px;
+    border: 1px solid #DEDEDE;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+#interface-user h2 {
+    font-size: 30px;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+#span-nome {
+    color: #BB071E;
+}
+
+#interface-user p {
+    font-size: 16px;
+    color: #6B6D6B;
+    margin-bottom: 25px;
+}
+
+#interface-user a[href="denuncia.html"] {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #BB071E;
+    color: #ffffff !important;
+    font-weight: bold;
+    padding: 12px 25px;
+    border-radius: 5px;
+    border: solid 1px #BB071E;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+    text-align: center;
+}
+
+#interface-user a[href="denuncia.html"]:hover {
+    background-color: #E60A25;
+    border-color: #E60A25;
+    transform: translateY(-2px);
+}
+
+#interface-user button[onclick="deslogar()"] {
+    background-color: transparent;
+    color: #161616;
+    border: solid 1px #6B6D6B;
+    padding: 12px 25px;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#interface-user button[onclick="deslogar()"]:hover {
+    background-color: #BB071E;
+    border-color: #BB071E;
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   CAIXA DE BUSCA DO PROTOCOLO
+   ========================================================================== */
+.busca-protocolo-box {
+    background-color: #ffffff;
+    max-width: 100% !important;
+    width: 100%;
+    margin: 30px auto 0 auto;        
+    padding: 30px;             
+    border-radius: 8px;       
+    border: 1px solid #DEDEDE; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+    display: block !important;
+    clear: both; 
+}
+
+.input-group-dash {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 25px;
+    float: none !important;
+}
+
+.input-group-dash label {
+    display: block !important;
+    width: 100% !important; 
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a1a1a;            
+    margin-bottom: 15px;       
+    text-align: center !important;
+}
+
+.input-group-dash input[type="number"] {
+    width: 100% !important;
+    max-width: 250px !important;
+    padding: 12px;
+    border: 1px solid #6B6D6B; 
+    border-radius: 5px;
+    font-size: 16px;
+    color: #1a1a1a;
+    background-color: #fff;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.input-group-dash input[type="number"]:focus {
+    border-color: #BB071E;     
+    outline: none;
+    box-shadow: 0 0 5px rgba(187, 7, 30, 0.2);
+}
+
+.input-group-dash input[type="number"]::-webkit-outer-spin-button,
+.input-group-dash input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-group-dash input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.btn-buscar-dash {
+    background-color: #BB071E; 
+    color: white;
+    border: 1px solid #BB071E;
+    padding: 14px 25px;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100% !important;
+    display: block !important;
+    float: none !important;
+    transition: all 0.3s ease;
+}
+
+.btn-buscar-dash:hover {
+    background-color: #d41932;
+    border-color: #E60A25;
+}
+
+/* ==========================================================================
+   RESULTADO DA OCORRÊNCIA E TABELAS GERAIS (PADRÃO CLARO UNIFICADO)
+   ========================================================================== */
+.ocorrencias-section {
+    width: 100%;
+    margin-top: 35px;
+    clear: both;
+}
+
+.ocorrencias-section table, table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    background-color: #ffffff !important;
+    border: 1px solid #DEDEDE !important;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ocorrencias-section th {
+    background-color: #F2F2F2 !important;
+    color: #1a1a1a !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 14px 15px;
+    border: 1px solid #DEDEDE !important;
+    text-align: left;
+}
+
+.ocorrencias-section td {
+    padding: 14px 15px;
+    border: 1px solid #DEDEDE !important;
+    color: #4a4a4a !important;
+    font-size: 14px;
+    vertical-align: top;
+    background-color: #ffffff !important;
+}
+
+.ocorrencias-section td strong {
+    color: #1a1a1a;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.status-pendente {
+    background-color: rgba(187, 7, 30, 0.08);
+    color: #BB071E;
+    border-color: rgba(187, 7, 30, 0.15);
+}
+
+.status-andamento {
+    background-color: rgba(255, 159, 67, 0.12);
+    color: #ff9f43;
+    border-color: rgba(255, 159, 67, 0.25);
+}
+
+.status-atendido {
+    background-color: rgba(46, 213, 115, 0.12);
+    color: #2ed573;
+    border-color: rgba(46, 213, 115, 0.25);
+}
+
+.sem-dados { 
+    text-align: center; 
+    color: #6B6D6B; 
+    padding: 30px 0; 
+}
+
+/* ==========================================================================
+   NOTAS DE DESPACHO E ESTRUTURA GERAL DO CHAT
+   ========================================================================== */
+.ocorrencias-section div[style*="border-left: 4px solid"] {
+    background-color: #F9F9F9 !important;
+    border-left: 4px solid #BB071E !important;
+    padding: 20px !important;
+    border-radius: 4px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.ocorrencias-section div[style*="border-left: 4px solid"] strong {
+    color: #BB071E !important;
+}
+
+.ocorrencias-section div[style*="border-left: 4px solid"] p {
+    color: #4a4a4a !important;
+}
+
+.chat-box {
+    background-color: #ffffff !important;
+    border: 1px solid #DEDEDE !important;
+    padding: 25px !important;
+    border-radius: 8px !important;
+    margin-top: 25px !important;
+}
+
+.chat-box h3 {
+    color: #1a1a1a !important;
+    font-size: 18px !important;
+    margin-bottom: 15px !important;
+    font-weight: bold;
+}
+
+#input-msg-vitima {
+    background-color: #ffffff !important;
+    border: 1px solid #6B6D6B !important;
+    color: #1a1a1a !important;
+    padding: 12px !important;
+    border-radius: 5px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease;
+}
+
+#input-msg-vitima:focus {
+    border-color: #BB071E !important;
+    outline: none;
+}
+
+.chat-box button {
+    background-color: #BB071E !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 0 25px !important;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+.chat-box button:hover {
+    background-color: #d41932 !important;
+}
+
+/* ==========================================================================
+   SISTEMA DE BALÕES DE CHAT (FLEXBOX REAL-TIME CLARO)
+   ========================================================================== */
+#chat-vitima-container, 
+[id^="chat-dev-container-"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    height: 250px !important;
+    background-color: #F2F2F2 !important;
+    border: 1px solid #DEDEDE !important;
+    padding: 15px !important;
+    border-radius: 6px !important;
+    margin-bottom: 15px !important;
+    overflow-y: auto !important;
+}
+
+/* Altura menor para o chat inline dentro da tabela do painel admin */
+[id^="chat-dev-container-"] {
+    height: 150px !important;
+}
+
+/* Estrutura de cada bloco de mensagem contido nos chats */
+#chat-vitima-container > div,
+[id^="chat-dev-container-"] > div {
+    max-width: 75% !important;   
+    min-width: 180px !important;  
+    width: fit-content !important;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* BALÃO DA VÍTIMA - Sempre alinhado na DIREITA (Vermelho Aegis) */
+.msg-vitima {
+    align-self: flex-end !important;
+    background-color: #BB071E !important; 
+    color: #ffffff !important;
+    border-bottom-right-radius: 2px !important;
+    text-align: left !important;
+}
+
+/* BALÃO DO DEV/SUPORTE - Sempre alinhado na ESQUERDA (Branco/Cinza Claro) */
+.msg-dev {
+    align-self: flex-start !important;
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    border: 1px solid #DEDEDE !important;
+    border-bottom-left-radius: 2px !important;
+    text-align: left !important;
+}
+
+.msg-vitima small,
+.msg-dev small {
+    display: block !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    margin-bottom: 4px !important;
+    opacity: 0.8 !important;
+}
+
+.msg-vitima small {
+    color: #ffffff !important;
+}
+
+.msg-dev small {
+    color: #666666 !important;
+}
+
+/* ==========================================================================
+   PAINEL DO DESENVOLVEDOR / ADMIN (#interface-dev CONVERTIDO PARA CLARO)
+   ========================================================================== */
+#interface-dev {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    max-width: 1200px;
+    width: 100%;
+    margin: 30px auto;
+    padding: 35px;
+    border-radius: 8px;
+    border: 1px solid #DEDEDE;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#interface-dev h2, #interface-dev h3 {
+    color: #1a1a1a !important;
+    margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   TABELA ADMINISTRATIVA (UI/UX RESTRUTURADO)
+   ========================================================================== */
+.container-tabelas {
+    margin-top: 25px;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    overflow-x: auto;
+}
+
+.tabela-admin {
+    width: 100%;
+    border-collapse: separate; /* Permite arredondar os cantos da tabela */
+    border-spacing: 0;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    background-color: #ffffff !important;
+    border: 1px solid #EAEAEA !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Cabeçalho Moderno */
+.tabela-admin th {
+    background-color: #F8F9FA !important;
+    color: #4A5568 !important; /* Tom cinza escuro mais elegante que o preto puro */
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 16px 12px;
+    border-bottom: 2px solid #E2E8F0 !important;
+    border-right: 1px solid #E2E8F0 !important;
+    text-align: left;
+}
+
+.tabela-admin th:last-child {
+    border-right: none !important;
+}
+
+/* Células da Tabela */
+.tabela-admin td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #EDF2F7 !important;
+    border-right: 1px solid #EDF2F7 !important;
+    color: #2D3748 !important;
+    font-size: 13px;
+    vertical-align: top;
+    background-color: #ffffff !important;
+    line-height: 1.5;
+}
+
+.tabela-admin td:last-child {
+    border-right: none !important;
+}
+
+/* Efeito Zebrado Suave ao passar o mouse */
+.tabela-admin tbody tr:hover td {
+    background-color: #FDFDFD !important;
+}
+
+/* Remove a borda da última linha para não chocar com a borda arredondada da tabela */
+.tabela-admin tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Ajuste de Textos dentro da tabela */
+.tabela-admin td strong {
+    font-weight: 600;
+}
+
+.tabela-admin td br + span, 
+.tabela-admin td small {
+    display: inline-block;
+    margin-top: 4px;
+    color: #718096;
+}
+
+/* Inputs, Selections e Chat dentro da Tabela */
+.tabela-admin .chat-container-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    min-width: 260px; /* Garante que o chat não fique espremido */
+    max-width: 320px;
+}
+
+/* Textareas de Notas e Respostas */
+.tabela-admin textarea {
+    width: 100%;
+    background-color: #FAFAFA !important;
+    color: #2D3748 !important;
+    border: 1px solid #CBD5E0 !important;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 45px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.tabela-admin textarea:focus {
+    background-color: #ffffff !important;
+    border-color: #BB071E !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(187, 7, 30, 0.1);
+}
+
+/* Input de texto rápido abaixo do chat */
+.tabela-admin input[type="text"] {
+    width: 100%;
+    background-color: #FAFAFA !important;
+    border: 1px solid #CBD5E0 !important;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.tabela-admin input[type="text"]:focus {
+    background-color: #ffffff !important;
+    border-color: #BB071E !important;
+    outline: none;
+}
+
+/* Select do Status Operacional */
+.tabela-admin select.status-select {
+    padding: 8px 12px;
+    background-color: #ffffff !important;
+    color: #2D3748 !important;
+    border: 1px solid #CBD5E0 !important;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    width: 100%;
+    min-width: 120px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.tabela-admin select.status-select:focus {
+    border-color: #BB071E !important;
+    box-shadow: 0 0 0 3px rgba(187, 7, 30, 0.1);
+}
+
+/* Botões de Ação na tabela do Admin */
+.btn-promover {
+    background-color: #2ed573 !important;
+    color: white !important;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.btn-rebaixar {
+    background-color: #ff9f43 !important;
+    color: white !important;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.btn-remover {
+    background-color: #BB071E !important;
+    color: white !important;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Botão Salvar (Coluna Direita) */
+.btn-salvar-admin {
+    background-color: #BB071E !important;
+    color: white !important;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    width: 100%;
+    min-width: 80px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+}
+
+.btn-salvar-admin:hover {
+    background-color: #E60A25 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(187, 7, 30, 0.2);
+}
+
+.btn-salvar-admin:active {
+    transform: translateY(0);
+}
+
+/* Botão Enviar Mensagem Interna */
+.tabela-admin .chat-container-mini button, 
+.tabela-admin button[onclick*="enviar"],
+.tabela-admin .btn-enviar-chat {
+    background-color: #2D3748 !important;
+    color: white !important;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    align-self: flex-end;
+}
+
+.tabela-admin .chat-container-mini button:hover {
+    background-color: #1A202C !important;
+}
+
+.btn-listar-usuarios {
+    background-color: transparent;
+    color: #1a1a1a;
+    border: 1px solid #6B6D6B;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.2s;
+}
+
+.btn-listar-usuarios:hover {
+    background-color: #F2F2F2;
+    border-color: #1a1a1a;
+}
+
+/* Tags de Destaque */
+.badge-vermelha {
+    background-color: rgba(187, 7, 30, 0.08);
+    color: #BB071E;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.badge-anonimo {
+    background: #ffcccc;
+    color: #aa1111;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
 }
