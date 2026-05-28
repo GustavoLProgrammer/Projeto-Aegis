@@ -59,26 +59,31 @@ async function fazerLogin() {
 
 window.onload = function() {
     const usuarioSalvo = localStorage.getItem("usuarioLogado");
+    
+    const telaLogin = document.getElementById("tela-login");
+    const interfaceUser = document.getElementById("interface-user");
+    const spanNome = document.getElementById("span-nome");
+    const interfaceDev = document.getElementById("interface-dev");
 
     if (usuarioSalvo) {
         const dados = JSON.parse(usuarioSalvo);
         cargoAtual = dados.cargo;
 
-        document.getElementById("tela-login").style.display = "none";
-        document.getElementById("interface-user").style.display = "block";
-        document.getElementById("span-nome").innerText = dados.nome;
+        if (telaLogin) telaLogin.style.display = "none";
+        if (interfaceUser) interfaceUser.style.display = "block";
+        if (spanNome) spanNome.innerText = dados.nome;
 
         atualizarTextoPermissao(cargoAtual);
 
         if (cargoAtual === "dev" || cargoAtual === "master") {
-            document.getElementById("interface-dev").style.display = "block";
+            if (interfaceDev) interfaceDev.style.display = "block";
             listarDenuncias(); 
         } else {
             atualizarTituloDashboard(dados.nome);
         }
     } else {
-        document.getElementById("tela-login").style.display = "block";
-        document.getElementById("interface-user").style.display = "none";
+        if (telaLogin) telaLogin.style.display = "block";
+        if (interfaceUser) interfaceUser.style.display = "none";
     }
 };
 
@@ -96,6 +101,15 @@ function acaoRestrita() {
 }
 
 async function cadastrarUsuario() {
+    // Agora que o formulário tem o ID "formCadastro", esta linha vai funcionar!
+    const form = document.getElementById("formCadastro");
+    
+    // O navegador vai ler os inputs, travar o envio se estiver vazio e mostrar os alertas visuais
+    if (form && !form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
     let nome = document.getElementById("nomeUsu").value.trim();
     let email = document.getElementById("emailUsu").value.trim();
     let senha = document.getElementById("senhaUsu").value.trim();

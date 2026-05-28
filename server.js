@@ -309,7 +309,15 @@ app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+const { exec } = require('child_process'); // Certifique-se de que isso está disponível ou adicione essa linha
+
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Servidor rodando com sucesso!`);
+    console.log(`Acesse localmente em: http://localhost:${PORT}`);
+    
+    // Abre o navegador automaticamente apenas quando rodando no seu computador
+    if (process.env.NODE_ENV !== 'production') {
+        exec(`start http://localhost:${PORT}`);
+    }
 });
