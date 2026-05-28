@@ -73,19 +73,16 @@ app.post('/api/smartwatch/alerta', async (req, res) => {
     res.status(200).json({ mensagem: 'Alerta processado com sucesso e viatura acionada!' });
 });
 
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-});
+const mysql = require('mysql2');
 
-db.connect(err => {
-    if (err) {
-        console.error('Erro ao conectar ao MySQL:', err);
-        return;
+const conexaoBanco = mysql.createConnection('mysql://ultqga3pr9q8lvdh:CDf75pSVR6UnzynKCeaR@bvvhjk84usqtm8lbbfyo-mysql.services.clever-cloud.com:3306/bvvhjk84usqtm8lbbfyo');
+
+conexaoBanco.connect((erro) => {
+    if (erro) {
+        console.error('Erro ao conectar na Clever Cloud:', erro);
+    } else {
+        console.log('Conectado com sucesso ao banco de dados na nuvem!');
     }
-    console.log('Conectado ao banco MySQL com sucesso!');
 });
 
 // INTEGRAÇÃO COM O PROCESSO DO MAPA MANUAL 
