@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto Aegis - Login</title>
+    <title>Projeto Aegis - Login e Painel</title>
     <link rel="stylesheet" href="css/login.css">
 </head>
+
 <body>
     <h1>Projeto Aegis</h1>
 
@@ -23,20 +25,53 @@
 
     <div id="interface-user" style="display: none;">
         <h2>Bem vindo, <span id="span-nome"></span>!</h2>
-        <p>Você está logado na área de visualização pública.</p>
-        <button onclick="deslogar()">Sair</button>
+        <p id="texto-permissao">Você está logado na área de visualização pública.</p>
+
+        <div class="busca-protocolo-box">
+            <div class="input-group-dash">
+                <label for="numeroProtocolo">Possui um protocolo? Digite-o para rastrear a viatura:</label>
+                <input type="number" id="numeroProtocolo" placeholder="Ex: 1">
+            </div>
+            <button class="btn-buscar-dash" onclick="buscarPorProtocolo()">Buscar Ocorrência</button>
+        </div>
+
+        <div class="ocorrencias-section">
+            <h2 id="titulo-lista">Resultado da Busca por Protocolo</h2>
+            <div id="tabela-area">
+                <p class="sem-dados">Nenhuma ocorrência pesquisada ou ativa no momento.</p>
+            </div>
+        </div>
+
+        <div
+            style="margin-top: 35px; display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
+            <a href="denuncia.html">🚨 Ir para Tela de Emergência</a>
+            <button onclick="deslogar()">Sair</button>
+        </div>
     </div>
 
     <div id="interface-dev" style="display: none;">
         <hr>
-        <h2>Painel do Desenvolvedor</h2>
-        <p>Ferramentas de monitoramento e gerenciamento do sistema liberadas.</p>
-        
-        <div>
-            <h3>Usuários Cadastrados no Sistema</h3>
-            <div id="listaUsuarios"></div>
+        <h2>🛡️ Painel do Desenvolvedor & Monitoramento</h2>
+        <p>Ferramentas de gerenciamento do sistema liberadas.</p>
+
+        <div class="container-tabelas">
+            <h3>🚨 Chamados e Denúncias em Tempo Real</h3>
+            <br>
+            <button onclick="listarDenuncias()"
+                style="background-color: #e63946; color: white; padding: 8px 16px; border: none; cursor: pointer; font-weight: bold;">🔄
+                Atualizar Painel de Ocorrências</button>
+            <br><br>
+            <div id="listaDenuncias">
+                <p style="color: #a0a0a5; font-style: italic;">Clique em "Atualizar Painel" para carregar os chamados do
+                    banco de dados.</p>
+            </div>
+        </div>
+
+        <div class="container-tabelas">
+            <h3>👥 Usuários Cadastrados no Sistema</h3>
             <br>
             <button onclick="listarUsuarios(this)">Listar Usuários</button>
+            <div id="listaUsuarios"></div>
             <br><br>
             <button onclick="acaoRestrita()">Executar Comando Dev</button>
         </div>
@@ -44,4 +79,5 @@
 
     <script src="/index.js"></script>
 </body>
+
 </html>

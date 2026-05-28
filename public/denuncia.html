@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fazer Denúncia - Projeto Aegis</title>
+    <link rel="stylesheet" href="css/denuncia.css">
+</head>
+
+<body>
+
+    <div class="container" id="main-container">
+        <header>
+            <h1>Fazer Denúncia</h1>
+            <p>Selecione o tipo de ocorrência para acionamento imediato</p>
+        </header>
+
+        <div id="painel-acao">
+            <button class="btn-acao btn-vermelho" onclick="acionarEmergencia('Emergência Geral')">
+                🚨 EMERGÊNCIA GERAL (POLÍCIA)
+            </button>
+
+            <button class="btn-acao btn-borda"
+                onclick="document.getElementById('opcoes-ajuda').classList.toggle('hidden')">
+                ⚠️ SOLICITAR AJUDA ESPECÍFICA
+            </button>
+
+            <div id="opcoes-ajuda" class="hidden">
+                <button class="btn-acao btn-borda" onclick="acionarEmergencia('Perseguição')">🏃‍♀️ Perseguição</button>
+                <button class="btn-acao btn-borda" onclick="acionarEmergencia('Agressão')">👊 Agressão</button>
+            </div>
+
+            <div class="nav-links">
+                <a href="index.html" class="btn-acao btn-borda">Voltar para a página inicial</a>
+                <a href="login.html" class="btn-acao btn-borda">Voltar para o dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="denuncia.js"></script>
+</body>
+
+</html>

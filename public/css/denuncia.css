@@ -1,0 +1,249 @@
+:root {
+    --bg-color: #f9f9f9;
+    --card-bg: #ffffff;
+    --accent-red: #BB071E;
+    --accent-hover: #E60A25;
+    --text-main: #1a1a1a;
+    --text-muted: #6B6D6B;
+    --border-color: #DEDEDE;
+    --btn-secondary: #f2f2f2;
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+header { 
+    text-align: center; 
+    margin-bottom: 30px; 
+}
+
+header h1 { 
+    color: var(--text-main); 
+    font-size: 28px; 
+    margin-bottom: 10px; 
+}
+
+header p { 
+    color: var(--text-muted); 
+    font-size: 16px; 
+}
+
+/* Painel de Ação */
+.action-screen { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+/* Estilo dos Botões Principais */
+.btn-action { 
+    width: 100%;
+    padding: 14px 25px; 
+    border: none; 
+    border-radius: 5px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    text-transform: uppercase;
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-emergency { 
+    background-color: var(--accent-red); 
+    color: white; 
+    border: solid 1px var(--accent-red);
+}
+
+.btn-emergency:hover { 
+    background-color: var(--accent-hover); 
+    border-color: var(--accent-hover);
+}
+
+.btn-help { 
+    background-color: transparent; 
+    border: solid 1px var(--text-muted); 
+    color: var(--text-main); 
+}
+
+.btn-help:hover {
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
+    color: white;
+}
+
+/* Sub-opções */
+.help-options { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: 5px; 
+}
+
+.btn-sub { 
+    width: 100%;
+    padding: 12px; 
+    background-color: var(--btn-secondary); 
+    border: solid 1px var(--border-color); 
+    color: #4a4a4a; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease; 
+}
+
+.btn-sub:hover { 
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
+    color: white;
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+/* Links de Navegação */
+.nav-links {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--accent-red);
+    text-decoration: underline;
+}
+
+.btn-acao {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.2s ease;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.btn-denuncia { background: #BB071E; color: #fff; }
+.btn-denuncia:hover { background: #8e0517; }
+
+.btn-login { background: #333333; color: #fff; }
+.btn-login:hover { background: #000000; }
+
+/* Container centralizado */
+.container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Padronização de botões */
+.btn-acao {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+/* Botão Vermelho (Primário) */
+.btn-vermelho {
+    background-color: #BB071E;
+    color: #fff;
+    border: none;
+}
+.btn-vermelho:hover { background-color: #8e0517; }
+
+/* Botão Borda (Secundário) */
+.btn-borda {
+    background-color: #fff;
+    color: #333;
+}
+.btn-borda:hover { background-color: #f0f0f0; }
+
+/* Links de navegação */
+.nav-links { margin-top: 20px; text-align: center; }
+.nav-links a { color: #666; text-decoration: none; font-size: 0.9rem; display: block; margin: 8px 0; }
+.nav-links a:hover { text-decoration: underline; }
+
+/* Isso força os links a agirem como botões */
+.nav-links .btn-acao {
+    display: block;        /* Faz ocupar a largura total */
+    text-decoration: none; /* Remove o sublinhado do link */
+    line-height: 1.5;      /* Centraliza o texto verticalmente */
+    box-sizing: border-box; /* Garante que o padding não quebre o layout */
+}
+
+
+.nav-links a {
+    display: block;
+    padding: 5px;
+    margin: 1px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+    border: 1px solid #333;
+    color: #333;
+    width: 50%;
+    
+    /* REMOVE O UNDERLINE */
+    text-decoration: none; 
+    
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: #f0f0f0;
+    text-decoration: none; /* Garante que não apareça ao passar o mouse */
+}

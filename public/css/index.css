@@ -141,7 +141,7 @@ main {
     border: none;
     cursor: pointer;
     margin-right: 10px;
-    margin-top: 100px;
+    margin-top: 40px;
 }
 
 .btn-denuncia-sistema button a {
@@ -485,4 +485,131 @@ footer {
     font-size: 20px;
     color: #fff;
     line-height: 1;
+}
+
+@media (max-width: 992px) {
+    main {
+        margin-top: 75px;
+    }
+
+    .container-hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .aegis-conteudo {
+        max-width: 100%;
+    }
+
+    .btn-denuncia-sistema {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .btn-denuncia-sistema button {
+        margin-top: 10px;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .btn-denuncia-sistema button a {
+        width: 100%;
+    }
+
+    .container-numeros {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nossos-servicos-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-coluna-logo {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .header {
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 2%;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .acesso {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .h1-des {
+        font-size: 32px;
+    }
+
+    .sobre-aegis h2 {
+        font-size: 26px;
+    }
+    
+    .sobre-aegis p {
+        font-size: 16px;
+    }
+
+    .info-container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .info-servico p {
+        font-size: 36px;
+    }
+
+    .ajuda h1 {
+        font-size: 24px;
+    }
+
+    .btn-denuncia-180 {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .btn-denuncia-180 button,
+    .btn-denuncia-180 button a {
+        width: 100%;
+        margin: 0;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .p-aegis-footer {
+        align-items: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .nossos-servicos-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .titulo-servicos {
+        font-size: 26px;
+    }
 }
