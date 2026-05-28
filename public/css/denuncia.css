@@ -52,14 +52,12 @@ header p {
     font-size: 16px; 
 }
 
-/* Painel de Ação */
 .action-screen { 
     display: flex; 
     flex-direction: column; 
     gap: 15px; 
 }
 
-/* Estilo dos Botões Principais */
 .btn-action { 
     width: 100%;
     padding: 14px 25px; 
@@ -98,7 +96,6 @@ header p {
     color: white;
 }
 
-/* Sub-opções */
 .help-options { 
     display: flex; 
     flex-direction: column; 
@@ -129,7 +126,6 @@ header p {
     display: none !important; 
 }
 
-/* Links de Navegação */
 .nav-links {
     margin-top: 30px;
     display: flex;
@@ -172,7 +168,6 @@ header p {
 .btn-login { background: #333333; color: #fff; }
 .btn-login:hover { background: #000000; }
 
-/* Container centralizado */
 .container {
     max-width: 500px;
     margin: 40px auto;
@@ -183,7 +178,6 @@ header p {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Padronização de botões */
 .btn-acao {
     width: 100%;
     padding: 15px;
@@ -197,7 +191,6 @@ header p {
     border: 1px solid #333;
 }
 
-/* Botão Vermelho (Primário) */
 .btn-vermelho {
     background-color: #BB071E;
     color: #fff;
@@ -205,24 +198,21 @@ header p {
 }
 .btn-vermelho:hover { background-color: #8e0517; }
 
-/* Botão Borda (Secundário) */
 .btn-borda {
     background-color: #fff;
     color: #333;
 }
 .btn-borda:hover { background-color: #f0f0f0; }
 
-/* Links de navegação */
 .nav-links { margin-top: 20px; text-align: center; }
 .nav-links a { color: #666; text-decoration: none; font-size: 0.9rem; display: block; margin: 8px 0; }
 .nav-links a:hover { text-decoration: underline; }
 
-/* Isso força os links a agirem como botões */
 .nav-links .btn-acao {
-    display: block;        /* Faz ocupar a largura total */
-    text-decoration: none; /* Remove o sublinhado do link */
-    line-height: 1.5;      /* Centraliza o texto verticalmente */
-    box-sizing: border-box; /* Garante que o padding não quebre o layout */
+    display: block;
+    text-decoration: none;
+    line-height: 1.5;
+    box-sizing: border-box;
 }
 
 
@@ -236,8 +226,6 @@ header p {
     border: 1px solid #333;
     color: #333;
     width: 50%;
-    
-    /* REMOVE O UNDERLINE */
     text-decoration: none; 
     
     transition: all 0.3s ease;
@@ -245,5 +233,5 @@ header p {
 
 .nav-links a:hover {
     background-color: #f0f0f0;
-    text-decoration: none; /* Garante que não apareça ao passar o mouse */
+    text-decoration: none;
 }

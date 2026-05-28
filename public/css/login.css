@@ -1,6 +1,3 @@
-/* ==========================================================================
-   CONFIGURAÇÕES GERAIS E ESTRUTURA BASE (PADRÃO CLARO)
-   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -35,9 +32,6 @@ div > h1 {
     margin-bottom: 20px;
 }
 
-/* ==========================================================================
-   TELA DE LOGIN
-   ========================================================================== */
 #tela-login {
     padding: 40px;
     border: 1px solid #DEDEDE;
@@ -135,9 +129,6 @@ div > h1 {
     cursor: pointer;
 }
 
-/* ==========================================================================
-   PAINEL DO USUÁRIO LOGADO (#interface-user)
-   ========================================================================== */
 #interface-user {
     background-color: #ffffff;
     max-width: 800px;
@@ -204,9 +195,6 @@ div > h1 {
     color: #ffffff;
 }
 
-/* ==========================================================================
-   CAIXA DE BUSCA DO PROTOCOLO
-   ========================================================================== */
 .busca-protocolo-box {
     background-color: #ffffff;
     max-width: 100% !important;
@@ -265,10 +253,6 @@ div > h1 {
     margin: 0;
 }
 
-.input-group-dash input[type="number"] {
-    -moz-appearance: textfield;
-}
-
 .btn-buscar-dash {
     background-color: #BB071E; 
     color: white;
@@ -289,9 +273,6 @@ div > h1 {
     border-color: #E60A25;
 }
 
-/* ==========================================================================
-   RESULTADO DA OCORRÊNCIA E TABELAS GERAIS (PADRÃO CLARO UNIFICADO)
-   ========================================================================== */
 .ocorrencias-section {
     width: 100%;
     margin-top: 35px;
@@ -367,9 +348,6 @@ div > h1 {
     padding: 30px 0; 
 }
 
-/* ==========================================================================
-   NOTAS DE DESPACHO E ESTRUTURA GERAL DO CHAT
-   ========================================================================== */
 .ocorrencias-section div[style*="border-left: 4px solid"] {
     background-color: #F9F9F9 !important;
     border-left: 4px solid #BB071E !important;
@@ -432,9 +410,6 @@ div > h1 {
     background-color: #d41932 !important;
 }
 
-/* ==========================================================================
-   SISTEMA DE BALÕES DE CHAT (FLEXBOX REAL-TIME CLARO)
-   ========================================================================== */
 #chat-vitima-container, 
 [id^="chat-dev-container-"] {
     display: flex !important;
@@ -449,12 +424,10 @@ div > h1 {
     overflow-y: auto !important;
 }
 
-/* Altura menor para o chat inline dentro da tabela do painel admin */
 [id^="chat-dev-container-"] {
     height: 150px !important;
 }
 
-/* Estrutura de cada bloco de mensagem contido nos chats */
 #chat-vitima-container > div,
 [id^="chat-dev-container-"] > div {
     max-width: 75% !important;   
@@ -468,7 +441,6 @@ div > h1 {
     flex-direction: column !important;
 }
 
-/* BALÃO DA VÍTIMA - Sempre alinhado na DIREITA (Vermelho Aegis) */
 .msg-vitima {
     align-self: flex-end !important;
     background-color: #BB071E !important; 
@@ -477,7 +449,6 @@ div > h1 {
     text-align: left !important;
 }
 
-/* BALÃO DO DEV/SUPORTE - Sempre alinhado na ESQUERDA (Branco/Cinza Claro) */
 .msg-dev {
     align-self: flex-start !important;
     background-color: #ffffff !important;
@@ -504,9 +475,6 @@ div > h1 {
     color: #666666 !important;
 }
 
-/* ==========================================================================
-   PAINEL DO DESENVOLVEDOR / ADMIN (#interface-dev CONVERTIDO PARA CLARO)
-   ========================================================================== */
 #interface-dev {
     background-color: #ffffff !important;
     color: #333333 !important;
@@ -524,9 +492,6 @@ div > h1 {
     margin-bottom: 20px;
 }
 
-/* ==========================================================================
-   TABELA ADMINISTRATIVA (UI/UX RESTRUTURADO)
-   ========================================================================== */
 .container-tabelas {
     margin-top: 25px;
     background: #ffffff;
@@ -539,7 +504,7 @@ div > h1 {
 
 .tabela-admin {
     width: 100%;
-    border-collapse: separate; /* Permite arredondar os cantos da tabela */
+    border-collapse: separate;
     border-spacing: 0;
     margin-top: 10px;
     margin-bottom: 15px;
@@ -549,10 +514,9 @@ div > h1 {
     overflow: hidden;
 }
 
-/* Cabeçalho Moderno */
 .tabela-admin th {
     background-color: #F8F9FA !important;
-    color: #4A5568 !important; /* Tom cinza escuro mais elegante que o preto puro */
+    color: #4A5568 !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 11px;
@@ -567,7 +531,6 @@ div > h1 {
     border-right: none !important;
 }
 
-/* Células da Tabela */
 .tabela-admin td {
     padding: 16px 12px;
     border-bottom: 1px solid #EDF2F7 !important;
@@ -583,17 +546,14 @@ div > h1 {
     border-right: none !important;
 }
 
-/* Efeito Zebrado Suave ao passar o mouse */
 .tabela-admin tbody tr:hover td {
     background-color: #FDFDFD !important;
 }
 
-/* Remove a borda da última linha para não chocar com a borda arredondada da tabela */
 .tabela-admin tbody tr:last-child td {
     border-bottom: none !important;
 }
 
-/* Ajuste de Textos dentro da tabela */
 .tabela-admin td strong {
     font-weight: 600;
 }
@@ -605,17 +565,15 @@ div > h1 {
     color: #718096;
 }
 
-/* Inputs, Selections e Chat dentro da Tabela */
 .tabela-admin .chat-container-mini {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    min-width: 260px; /* Garante que o chat não fique espremido */
+    min-width: 260px;
     max-width: 320px;
 }
 
-/* Textareas de Notas e Respostas */
 .tabela-admin textarea {
     width: 100%;
     background-color: #FAFAFA !important;
@@ -637,7 +595,6 @@ div > h1 {
     box-shadow: 0 0 0 3px rgba(187, 7, 30, 0.1);
 }
 
-/* Input de texto rápido abaixo do chat */
 .tabela-admin input[type="text"] {
     width: 100%;
     background-color: #FAFAFA !important;
@@ -655,7 +612,6 @@ div > h1 {
     outline: none;
 }
 
-/* Select do Status Operacional */
 .tabela-admin select.status-select {
     padding: 8px 12px;
     background-color: #ffffff !important;
@@ -676,7 +632,6 @@ div > h1 {
     box-shadow: 0 0 0 3px rgba(187, 7, 30, 0.1);
 }
 
-/* Botões de Ação na tabela do Admin */
 .btn-promover {
     background-color: #2ed573 !important;
     color: white !important;
@@ -709,7 +664,6 @@ div > h1 {
     font-weight: bold;
 }
 
-/* Botão Salvar (Coluna Direita) */
 .btn-salvar-admin {
     background-color: #BB071E !important;
     color: white !important;
@@ -737,7 +691,6 @@ div > h1 {
     transform: translateY(0);
 }
 
-/* Botão Enviar Mensagem Interna */
 .tabela-admin .chat-container-mini button, 
 .tabela-admin button[onclick*="enviar"],
 .tabela-admin .btn-enviar-chat {
@@ -774,7 +727,6 @@ div > h1 {
     border-color: #1a1a1a;
 }
 
-/* Tags de Destaque */
 .badge-vermelha {
     background-color: rgba(187, 7, 30, 0.08);
     color: #BB071E;
@@ -793,7 +745,22 @@ div > h1 {
     font-weight: bold;
 }
 
-/* RESPONSIVIDADE */
+
+.container-tabelas button {
+background-color: #BB071E;
+color: #ffffff;
+font-size: 16px;
+font-weight: 600;
+padding: 12px 24px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.container-tabelas button:hover {
+background-color: #d41932;
+}
+
 @media (max-width: 480px) {
     h1 {
         font-size: 32px;
