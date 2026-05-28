@@ -92,19 +92,10 @@ function deslogar() {
     location.reload();
 }
 
-function acaoRestrita() {
-    if (cargoAtual === "dev" || cargoAtual === "master") {
-        alert("Acesso autorizado: Alterando configurações do sistema...");
-    } else {
-        alert("Erro: Área restrita a desenvolvedores.");
-    }
-}
 
 async function cadastrarUsuario() {
-    // Agora que o formulário tem o ID "formCadastro", esta linha vai funcionar!
     const form = document.getElementById("formCadastro");
     
-    // O navegador vai ler os inputs, travar o envio se estiver vazio e mostrar os alertas visuais
     if (form && !form.checkValidity()) {
         form.reportValidity();
         return;

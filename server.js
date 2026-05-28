@@ -10,7 +10,6 @@ const path = require('path');
 
 
 
-// MÓDULOS ADICIONADOS PARA O MAPA E PROCESSO PYTHON
 
 const http = require('http');
 
@@ -38,7 +37,6 @@ app.use((req, res, next) => {
 
 
 
-// Servidor integrado HTTP + Socket.io para comunicação em tempo real
 
 const server = http.createServer(app);
 
@@ -50,7 +48,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-// Rota criada para abrir o painel de GPS no navegador
 
 app.get('/central/gps', (req, res) => {
 
@@ -60,7 +57,6 @@ app.get('/central/gps', (req, res) => {
 
 
 
-// ROTA DO SMARTWATCH AEGIS 
 
 app.post('/api/smartwatch/alerta', async (req, res) => {
 
@@ -88,7 +84,6 @@ app.post('/api/smartwatch/alerta', async (req, res) => {
 
     try {
 
-        // Consulta a API Nominatim para traduzir as coordenadas GPS em Nome da Rua e Número
 
         const urlFetch = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat.trim()}&lon=${lng.trim()}`;
 
@@ -106,7 +101,6 @@ app.post('/api/smartwatch/alerta', async (req, res) => {
 
 
 
-    // Executa o processador Python 
 
     const pythonProcess = spawn('python3', [
 
@@ -132,7 +126,6 @@ app.post('/api/smartwatch/alerta', async (req, res) => {
 
 
 
-    // Envia o ponto traduzido em tempo real para plotar no mapa da central
 
     io.emit('fixar_sos_no_mapa', {
 
@@ -158,7 +151,6 @@ app.post('/api/smartwatch/alerta', async (req, res) => {
 
 
 
-// Substituído para mysql.createPool para gerenciar conexões automaticamente na nuvem
 
 const db = mysql.createPool({
 
@@ -180,7 +172,6 @@ const db = mysql.createPool({
 
 
 
-// Teste de conexão inicial do Pool
 
 db.getConnection((err, connection) => {
 
@@ -194,7 +185,7 @@ db.getConnection((err, connection) => {
 
     console.log('Conectado ao pool do MySQL com sucesso!');
 
-    connection.release(); // Libera a conexão de volta para o pool
+    connection.release();
 
 });
 
@@ -608,7 +599,7 @@ app.get(/.*/, (req, res) => {
 
 
 
-const { exec } = require('child_process'); // Certifique-se de que isso está disponível ou adicione essa linha
+const { exec } = require('child_process');
 
 
 
@@ -622,7 +613,6 @@ server.listen(PORT, () => {
 
     
 
-    // Abre o navegador automaticamente apenas quando rodando no seu computador
 
     if (process.env.NODE_ENV !== 'production') {
 
