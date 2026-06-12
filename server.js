@@ -80,6 +80,7 @@ app.post('/api/smartwatch/alerta', async (req, res) => {
     res.status(200).json({ mensagem: 'Alerta processado com sucesso e viatura acionada!' });
 });
 
+// ========== CONEXÃO COM MYSQL COM SSL (para o Render) ==========
 const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -87,8 +88,12 @@ const db = mysql.createPool({
     database: process.env.DB_DATABASE,
     waitForConnections: true,
     connectionLimit: 3,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
+// ===============================================================
 
 db.getConnection((err, connection) => {
     if (err) {
@@ -261,14 +266,19 @@ app.post('/api/denuncias/:id/mensagens', (req, res) => {
     });
 });
 
-// ========== ROTA SEM RESTRIÇÃO - QUALQUER UM PODE VER QUALQUER PROTOCOLO ==========
+// ========== ROTA COM LOG DE ERRO DETALHADO ==========
 app.get('/api/denuncias/:id', (req, res) => {
     const id = req.params.id;
     const query = "SELECT id, status, latitude, longitude, nome, endereco, tipo_ocorrencia, observacoes FROM denuncias WHERE id = ?";
     
     db.query(query, [id], (err, results) => {
-        if (err) return res.status(500).json({ erro: 'Erro ao buscar o protocolo.' });
-        if (results.length === 0) return res.status(404).json({ erro: 'Protocolo não encontrado.' });
+        if (err) {
+            console.error('ERRO SQL DETALHADO:', err);
+            return res.status(500).json({ erro: 'Erro ao buscar o protocolo.', detalhe: err.message });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ erro: 'Protocolo não encontrado.' });
+        }
         
         res.json(results[0]);
     });
