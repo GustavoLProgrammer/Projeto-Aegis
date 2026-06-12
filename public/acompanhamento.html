@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis - Acompanhamento de Viatura</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #e63946;
+            letter-spacing: 1px;
+        }
+
+        .header h1 span {
+            color: #1a1a2e;
+        }
+
+        .header p {
+            color: #666;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+
+        .protocolo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .status-pendente {
+            background: #ffeeba;
+            color: #856404;
+        }
+
+        .status-andamento {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-atendido {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .eta {
+            color: #e63946;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-voltar {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-voltar:hover {
+            background: #5a6268;
+        }
+
+        .btn-atualizar {
+            background: #e63946;
+            color: white;
+        }
+
+        .btn-atualizar:hover {
+            background: #c1121f;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 65vh;
+            width: 100%;
+            border-radius: 12px;
+            background-color: #e9ecef;
+        }
+
+        .btn-centralizar {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-centralizar:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+        }
+
+        .btn-centralizar.ativo {
+            background: #3a86ff;
+        }
+
+        .btn-centralizar.ativo svg {
+            fill: white;
+        }
+
+        .btn-centralizar svg {
+            width: 24px;
+            height: 24px;
+            fill: #555;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #888;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>AEGIS <span>| Rastreamento de Viatura</span></h1>
+        <p>Acompanhe em tempo real o deslocamento da viatura até o local da ocorrência</p>
+    </div>
+
+    <div class="status-card">
+        <div class="protocolo" id="protocolo-titulo">Protocolo: #---</div>
+        <div class="status-row">
+            <span class="status-label">Status Atual:</span>
+            <span id="status-atual" class="status-badge status-pendente">Carregando...</span>
+        </div>
+        <div class="eta" id="eta-container">⏱️ Aguardando...</div>
+        <div class="btn-group">
+            <button class="btn btn-voltar" onclick="window.location.href='login.html'">← Voltar ao Dashboard</button>
+            <button class="btn btn-atualizar" onclick="location.reload()">🔄 Atualizar Mapa</button>
+        </div>
+    </div>
+
+    <div class="map-card">
+        <div class="map-container" style="position: relative;">
+            <div id="map" style="display: none;"></div>
+            <button id="btn-centralizar" class="btn-centralizar" onclick="centralizarNoUsuario()" title="Centralizar na sua localização" style="display: none;">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Aegis - Proteção e Segurança | Sistema de rastreamento em tempo real</p>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<script>
+    // PEGAR ID DA URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const idDenuncia = urlParams.get('id');
+    
+    // SALVAR O PROTOCOLO NO LOCALSTORAGE
+    if (idDenuncia) {
+        localStorage.setItem('ultimoProtocolo', idDenuncia);
+    }
+    
+    const statusAtualSpan = document.getElementById('status-atual');
+    const etaContainer = document.getElementById('eta-container');
+    const protocoloTitulo = document.getElementById('protocolo-titulo');
+    
+    if (!idDenuncia) {
+        protocoloTitulo.innerHTML = '❌ ERRO: Nenhum protocolo informado!';
+        etaContainer.innerHTML = 'Volte ao Dashboard e clique em "Rastrear Viatura"';
+        statusAtualSpan.innerText = 'Erro';
+    } else {
+        protocoloTitulo.innerHTML = `Protocolo: #${idDenuncia}`;
+    }
+    
+    const bases = [
+        { nome: "Base Norte", lat: -23.4505, lng: -46.6333 },
+        { nome: "Base Sul", lat: -23.6505, lng: -46.6333 },
+        { nome: "Base Leste", lat: -23.5505, lng: -46.5333 },
+        { nome: "Base Oeste", lat: -23.5505, lng: -46.7333 },
+        { nome: "Base Centro", lat: -23.5505, lng: -46.6333 }
+    ];
+
+    let map;
+    let markerViatura = null;
+    let intervaloAnimacao = null;
+    let vitimaLat = 0, vitimaLng = 0;
+    let viaturaAtual = { lat: 0, lng: 0 };
+    let rotaAtual = null;
+    let indiceRota = 0;
+    let linhaRota = null;
+    let statusAtual = "Pendente";
+    let seguindoUsuario = false;
+    let timeoutSeguindo = null;
+
+    const VELOCIDADE_VIATURA = 40;
+
+    const viaturaIcon = L.divIcon({
+        html: '<div style="font-size: 42px;">🚔</div>',
+        iconSize: [42, 42],
+        className: 'viatura-marker'
+    });
+
+    function atualizarCorStatus(status) {
+        statusAtualSpan.classList.remove('status-pendente', 'status-andamento', 'status-atendido');
+        if (status === "Pendente") {
+            statusAtualSpan.classList.add('status-pendente');
+        } else if (status === "Em Andamento") {
+            statusAtualSpan.classList.add('status-andamento');
+        } else if (status === "Atendido") {
+            statusAtualSpan.classList.add('status-atendido');
+        }
+        statusAtualSpan.innerText = status;
+    }
+
+    function formatarTempo(minutosDecimal) {
+        const minutosInteiros = Math.floor(minutosDecimal);
+        const segundosInteiros = Math.floor((minutosDecimal - minutosInteiros) * 60);
+        
+        if (minutosInteiros === 0 && segundosInteiros === 0) {
+            return "menos de 1 minuto";
+        }
+        if (minutosInteiros === 0) {
+            return `${segundosInteiros} segundos`;
+        }
+        if (segundosInteiros === 0) {
+            return `${minutosInteiros} minuto${minutosInteiros > 1 ? 's' : ''}`;
+        }
+        return `${minutosInteiros} minuto${minutosInteiros > 1 ? 's' : ''} e ${segundosInteiros} segundo${segundosInteiros > 1 ? 's' : ''}`;
+    }
+
+    async function buscarStatusDenuncia() {
+        if (!idDenuncia) return;
+        
+        try {
+            const resposta = await fetch(`/api/denuncias/${idDenuncia}`);
+            if (!resposta.ok) throw new Error("Protocolo não encontrado");
+            
+            const denuncia = await resposta.json();
+            statusAtual = denuncia.status;
+            atualizarCorStatus(statusAtual);
+            etaContainer.innerHTML = `📋 Status: ${statusAtual}`;
+            
+            const localSalva = localStorage.getItem(`localizacao_${idDenuncia}`);
+            if (localSalva) {
+                const dados = JSON.parse(localSalva);
+                const agora = Date.now();
+                if (agora - dados.timestamp < 3600000) {
+                    vitimaLat = dados.lat;
+                    vitimaLng = dados.lng;
+                    document.getElementById('map').style.display = 'block';
+                    document.getElementById('btn-centralizar').style.display = 'flex';
+                    iniciarMapa();
+                    return;
+                }
+            }
+            
+            solicitarLocalizacaoAutomatica();
+            
+        } catch (err) {
+            etaContainer.innerHTML = "❌ " + err.message;
+            statusAtualSpan.innerText = "Erro";
+        }
+    }
+    
+    function solicitarLocalizacaoAutomatica() {
+        if (!navigator.geolocation) {
+            etaContainer.innerHTML = '❌ Seu navegador não suporta geolocalização';
+            return;
+        }
+        
+        etaContainer.innerHTML = '🟡 Solicitando sua localização...';
+        
+        navigator.geolocation.getCurrentPosition(
+            async (posicao) => {
+                vitimaLat = posicao.coords.latitude;
+                vitimaLng = posicao.coords.longitude;
+                
+                localStorage.setItem(`localizacao_${idDenuncia}`, JSON.stringify({
+                    lat: vitimaLat,
+                    lng: vitimaLng,
+                    timestamp: Date.now()
+                }));
+                
+                document.getElementById('map').style.display = 'block';
+                document.getElementById('btn-centralizar').style.display = 'flex';
+                
+                await iniciarMapa();
+            },
+            (erro) => {
+                let msg = '';
+                switch(erro.code) {
+                    case 1: msg = 'Você negou a permissão. Recarregue a página e permita.';
+                            break;
+                    case 2: msg = 'Localização indisponível. Verifique seu GPS.';
+                            break;
+                    case 3: msg = 'Tempo esgotado. Tente novamente.';
+                            break;
+                    default: msg = erro.message;
+                }
+                etaContainer.innerHTML = `❌ ${msg}`;
+            }
+        );
+    }
+    
+    function centralizarNoUsuario() {
+        if (vitimaLat && vitimaLng) {
+            seguindoUsuario = true;
+            document.getElementById('btn-centralizar').classList.add('ativo');
+            map.setView([vitimaLat, vitimaLng], 16);
+            
+            if (timeoutSeguindo) clearTimeout(timeoutSeguindo);
+            timeoutSeguindo = setTimeout(() => {
+                seguindoUsuario = false;
+                document.getElementById('btn-centralizar').classList.remove('ativo');
+                etaContainer.innerHTML = "🔄 Voltando a acompanhar a viatura...";
+            }, 8000);
+        }
+    }
+    
+    function onMapMove() {
+        if (seguindoUsuario && vitimaLat && vitimaLng) {
+            const center = map.getCenter();
+            const distancia = calcularDistancia(center.lat, center.lng, vitimaLat, vitimaLng);
+            if (distancia > 0.05) {
+                seguindoUsuario = false;
+                document.getElementById('btn-centralizar').classList.remove('ativo');
+                if (timeoutSeguindo) {
+                    clearTimeout(timeoutSeguindo);
+                    timeoutSeguindo = null;
+                }
+            }
+        }
+    }
+    
+    function encontrarBaseMaisProxima(latO, lngO) {
+        return bases.reduce((prev, curr) => {
+            let distPrev = Math.hypot(prev.lat - latO, prev.lng - lngO);
+            let distCurr = Math.hypot(curr.lat - latO, curr.lng - lngO);
+            return distCurr < distPrev ? curr : prev;
+        });
+    }
+
+    function calcularDistancia(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function calcularDistanciaTotalRota(rota) {
+        let distanciaTotal = 0;
+        for (let i = 0; i < rota.length - 1; i++) {
+            distanciaTotal += calcularDistancia(
+                rota[i].lat, rota[i].lng,
+                rota[i+1].lat, rota[i+1].lng
+            );
+        }
+        return distanciaTotal;
+    }
+
+    async function buscarRotaReal(origem, destino) {
+        const url = `https://router.project-osrm.org/route/v1/driving/${origem.lng},${origem.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.code === 'Ok' && data.routes.length > 0) {
+                const coordinates = data.routes[0].geometry.coordinates;
+                return coordinates.map(coord => ({ lat: coord[1], lng: coord[0] }));
+            }
+        } catch (error) {
+            console.error("Erro ao buscar rota:", error);
+        }
+        return null;
+    }
+
+    function iniciarAnimacaoRota(rota) {
+        if (statusAtual !== "Em Andamento") {
+            etaContainer.innerHTML = `⏳ Aguardando despacho da viatura... (Status: ${statusAtual})`;
+            return;
+        }
+        if (intervaloAnimacao) clearInterval(intervaloAnimacao);
+        
+        rotaAtual = rota;
+        indiceRota = 0;
+        if (!rotaAtual || rotaAtual.length === 0) return;
+        
+        viaturaAtual = rotaAtual[0];
+        if (markerViatura) {
+            markerViatura.setLatLng([viaturaAtual.lat, viaturaAtual.lng]);
+        }
+        
+        const distanciaTotal = calcularDistanciaTotalRota(rotaAtual);
+        const tempoTotalHoras = distanciaTotal / VELOCIDADE_VIATURA;
+        const tempoTotalMinutos = tempoTotalHoras * 60;
+        etaContainer.innerHTML = `⏱️ ETA: ${formatarTempo(tempoTotalMinutos)} | Distância: ${distanciaTotal.toFixed(1)} km`;
+        
+        const totalPontos = rotaAtual.length;
+        const intervaloMs = 1000;
+        const tempoAnimacaoSegundos = tempoTotalHoras * 3600;
+        const pontosPorSegundo = Math.max(1, Math.min(5, Math.floor(totalPontos / tempoAnimacaoSegundos)));
+        const velocidadeAnimacao = Math.max(1, pontosPorSegundo);
+        
+        intervaloAnimacao = setInterval(() => {
+            if (!rotaAtual || indiceRota >= rotaAtual.length - 1) {
+                clearInterval(intervaloAnimacao);
+                etaContainer.innerHTML = "✅ VIATURA CHEGOU AO SEU LOCAL!";
+                statusAtualSpan.innerText = "✅ Viatura chegou!";
+                if (markerViatura) {
+                    markerViatura.setLatLng([vitimaLat, vitimaLng]);
+                }
+                return;
+            }
+            
+            indiceRota = Math.min(indiceRota + velocidadeAnimacao, rotaAtual.length - 1);
+            viaturaAtual = rotaAtual[indiceRota];
+            markerViatura.setLatLng([viaturaAtual.lat, viaturaAtual.lng]);
+            
+            let distanciaRestante = 0;
+            for (let i = indiceRota; i < rotaAtual.length - 1; i++) {
+                distanciaRestante += calcularDistancia(
+                    rotaAtual[i].lat, rotaAtual[i].lng,
+                    rotaAtual[i+1].lat, rotaAtual[i+1].lng
+                );
+            }
+            
+            const tempoRestanteHoras = distanciaRestante / VELOCIDADE_VIATURA;
+            const tempoRestanteMinutos = tempoRestanteHoras * 60;
+            
+            if (distanciaRestante < 0.1) {
+                etaContainer.innerHTML = "✅ VIATURA CHEGANDO...";
+            } else {
+                etaContainer.innerHTML = `⏱️ ETA: ${formatarTempo(tempoRestanteMinutos)} | Distância: ${distanciaRestante.toFixed(1)} km`;
+            }
+            
+            if (!seguindoUsuario) {
+                map.setView([viaturaAtual.lat, viaturaAtual.lng], 14);
+            }
+        }, intervaloMs);
+    }
+    
+    async function iniciarMapa() {
+        map = L.map('map').setView([vitimaLat, vitimaLng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        map.on('moveend', onMapMove);
+        
+        L.marker([vitimaLat, vitimaLng], {
+            icon: L.divIcon({ 
+                html: '<div style="font-size: 45px;">🚨</div>', 
+                iconSize: [45, 45],
+                className: 'victim-marker'
+            })
+        }).addTo(map).bindPopup("📍 VOCÊ ESTÁ AQUI - LOCAL DA OCORRÊNCIA").openPopup();
+        
+        bases.forEach(base => {
+            L.marker([base.lat, base.lng], {
+                icon: L.divIcon({ 
+                    html: '<div style="font-size: 35px;">👮</div>', 
+                    iconSize: [35, 35],
+                    className: 'base-marker'
+                })
+            }).addTo(map).bindPopup(`${base.nome} - Base Policial`);
+        });
+        
+        const baseEscolhida = encontrarBaseMaisProxima(vitimaLat, vitimaLng);
+        const origem = { lat: baseEscolhida.lat, lng: baseEscolhida.lng };
+        const destino = { lat: vitimaLat, lng: vitimaLng };
+        
+        markerViatura = L.marker([origem.lat, origem.lng], { icon: viaturaIcon }).addTo(map);
+        viaturaAtual = origem;
+        
+        seguindoUsuario = false;
+        document.getElementById('btn-centralizar').classList.remove('ativo');
+        
+        etaContainer.innerHTML = "🔄 Calculando rota...";
+        
+        const rota = await buscarRotaReal(origem, destino);
+        
+        if (rota && rota.length > 0) {
+            const latlngs = rota.map(p => [p.lat, p.lng]);
+            if (linhaRota) map.removeLayer(linhaRota);
+            linhaRota = L.polyline(latlngs, { color: '#3a86ff', weight: 5, opacity: 0.8 }).addTo(map);
+            
+            if (statusAtual === "Em Andamento") {
+                iniciarAnimacaoRota(rota);
+            } else {
+                const distanciaTotal = calcularDistanciaTotalRota(rota);
+                const tempoTotalMinutos = (distanciaTotal / VELOCIDADE_VIATURA) * 60;
+                etaContainer.innerHTML = `⏳ Aguardando despacho... (Status: ${statusAtual}) | Distância: ${distanciaTotal.toFixed(1)} km | ETA quando autorizado: ${formatarTempo(tempoTotalMinutos)}`;
+            }
+        } else {
+            etaContainer.innerHTML = "⚠️ Não foi possível calcular a rota.";
+        }
+    }
+    
+    if (idDenuncia) {
+        buscarStatusDenuncia();
+    }
+</script>
+</body>
+</html>

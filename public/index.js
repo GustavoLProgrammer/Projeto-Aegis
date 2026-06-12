@@ -1,3 +1,58 @@
+// ========== BLOQUEIO COMPLETO DO SOCKET.IO NAS PÁGINAS QUE NÃO PRECISAM ==========
+// Verifica se não é a página do mapa
+if (!window.location.pathname.includes('acompanhamento.html')) {
+    // Bloqueia qualquer tentativa de criar conexão Socket.IO
+    if (typeof io !== 'undefined') {
+        window.io = null;
+        delete window.io;
+    }
+    
+    // Intercepta chamadas para WebSocket
+    const originalWebSocket = window.WebSocket;
+    window.WebSocket = function(...args) {
+        if (args[0] && args[0].includes('socket.io')) {
+            return null;
+        }
+        return new originalWebSocket(...args);
+    };
+}
+
+// Bloqueia erros de promise não tratadas do Socket.IO
+window.addEventListener('unhandledrejection', function(e) {
+    if (e.reason && e.reason.message && 
+        (e.reason.message.includes('Socket.IO') || 
+         e.reason.message.includes('message channel closed') ||
+         e.reason.message.includes('listener indicated'))) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Bloqueia erros de evento
+window.addEventListener('error', function(e) {
+    if (e.message && (e.message.includes('Socket.IO') || 
+        e.message.includes('message channel closed') ||
+        e.message.includes('listener indicated an asynchronous response'))) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+});
+
+// Silencia console.error para erros específicos
+const originalError = console.error;
+console.error = function(...args) {
+    const str = args.join(' ');
+    if (str.includes('Socket.IO') || 
+        str.includes('message channel closed') || 
+        str.includes('listener indicated') ||
+        str.includes('WebSocket')) {
+        return;
+    }
+    originalError.apply(console, args);
+};
+// ======================================================
+
 let cargoAtual = "";
 
 function atualizarTextoPermissao(cargo) {
@@ -57,7 +112,8 @@ async function fazerLogin() {
     }
 }
 
-window.onload = function() {
+// Função original do window.onload que será preservada
+function originalWindowOnload() {
     const usuarioSalvo = localStorage.getItem("usuarioLogado");
     
     const telaLogin = document.getElementById("tela-login");
@@ -85,13 +141,12 @@ window.onload = function() {
         if (telaLogin) telaLogin.style.display = "block";
         if (interfaceUser) interfaceUser.style.display = "none";
     }
-};
+}
 
 function deslogar() {
     localStorage.removeItem("usuarioLogado");
     location.reload();
 }
-
 
 async function cadastrarUsuario() {
     const form = document.getElementById("formCadastro");
@@ -183,7 +238,7 @@ async function listarUsuarios(botao, focarAtualizacao = false) {
                     <th style="padding: 8px;">E-mail</th>
                     <th style="padding: 8px;">Cargo</th>
                     <th style="padding: 8px;">Ações</th>
-                </tr>
+                </td>
             </thead>
             <tbody>
         `;
@@ -213,7 +268,7 @@ async function listarUsuarios(botao, focarAtualizacao = false) {
                 <td style="padding: 8px;">${usuario.email}</td>
                 <td style="padding: 8px; color: ${corCargo}; font-weight: bold;">${usuario.cargo}</td>
                 <td style="padding: 8px;">${botaoAcao}</td>
-            </tr>
+            <tr>
             `;
         });
 
@@ -314,15 +369,18 @@ async function listarDenuncias() {
     }
 
     const divListaDenuncias = document.getElementById("listaDenuncias");
+    
+    // Mostra loading
+    divListaDenuncias.innerHTML = '<p style="color: #a0a0a5;">🔄 Carregando denúncias...</p>';
 
     try {
         const resposta = await fetch('/api/denuncias');
-        const listaDenuncias = await resposta.json();
-
+        
         if (!resposta.ok) {
-            divListaDenuncias.innerHTML = "<p>Erro ao carregar o painel de denúncias.</p>";
-            return;
+            throw new Error(`HTTP ${resposta.status}: ${resposta.statusText}`);
         }
+        
+        const listaDenuncias = await resposta.json();
 
         if (listaDenuncias.length === 0) {
             divListaDenuncias.innerHTML = "<p>Nenhum chamado de emergência registrado no momento.</p>";
@@ -375,10 +433,17 @@ async function listarDenuncias() {
                         </div>
                     </div>
                 </td>
-                <td>
-                    <button onclick="salvarAtualizacaoDev(${denuncia.id})" style="background-color: #3a86ff; color: white; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold;">Salvar</button>
+                <td style="padding: 8px;">
+                    <button onclick="salvarAtualizacaoDev(${denuncia.id})" 
+                            style="background-color: #3a86ff; color: white; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; margin-bottom: 5px; width: 100%;">
+                        💾 Salvar
+                    </button>
+                    <a href="/acompanhamento.html?id=${denuncia.id}" target="_blank" 
+                       style="background-color: #e63946; color: white; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; text-decoration: none; display: block; text-align: center; border-radius: 4px;">
+                        🗺️ Acompanhar no Mapa
+                    </a>
                 </td>
-            </tr>
+            比
             `;
         });
 
@@ -405,7 +470,9 @@ async function listarDenuncias() {
         });
 
     } catch (erro) {
-        alert("Erro ao conectar com o servidor para monitorar denúncias.");
+        console.error("Erro detalhado:", erro);
+        divListaDenuncias.innerHTML = `<p style="color: #e63946;">❌ Erro ao carregar denúncias: ${erro.message}</p>`;
+        alert("Erro ao conectar com o servidor para monitorar denúncias. Verifique se o servidor está rodando.");
     }
 }
 
@@ -438,6 +505,7 @@ function atualizarTituloDashboard(nomeUsuario) {
     }
 }
 
+// ========== FUNÇÃO BUSCAR PROTOCOLO CORRIGIDA COM CARGO ==========
 async function buscarPorProtocolo() {
     const idProtocolo = document.getElementById("numeroProtocolo").value.trim();
 
@@ -448,9 +516,10 @@ async function buscarPorProtocolo() {
 
     const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
     const cpfSolicitante = usuarioLogado ? usuarioLogado.cpf : "anonimo";
+    const cargo = usuarioLogado ? usuarioLogado.cargo : "";
 
     try {
-        const resposta = await fetch(`/api/denuncias/${idProtocolo}?solicitante=${cpfSolicitante}`);
+        const resposta = await fetch(`/api/denuncias/${idProtocolo}?solicitante=${cpfSolicitante}&cargo=${cargo}`);
         
         if (!resposta.ok) {
             const dadosErro = await resposta.json();
@@ -496,7 +565,7 @@ function renderizarOcorrencia(ocorrencia) {
                     <td><span class="status-badge ${classeStatus}">${iconeStatus}${ocorrencia.status}</span></td>
                 </tr>
             </tbody>
-        </table>
+        </tr>
 
         <div style="margin-top: 25px; padding: 15px; background: rgba(255,255,255,0.05); border-left: 4px solid #3a86ff; border-radius: 4px; text-align: left;">
             <strong style="color: #3a86ff; display: block; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase;">💬 Notas de Atualização e Despacho:</strong>
@@ -575,3 +644,62 @@ async function enviarMensagemChat(idDenuncia, inputId, containerId, remetente) {
         alert("Erro ao enviar a mensagem.");
     }
 }
+
+// ========== FUNÇÕES PARA O MAPA ==========
+
+function abrirMapaPrompt() {
+    const inputProtocolo = document.getElementById("numeroProtocolo");
+    
+    if (!inputProtocolo) {
+        alert("Campo de protocolo não encontrado!");
+        return;
+    }
+    
+    let protocolo = inputProtocolo.value.trim();
+    
+    if (protocolo === "") {
+        protocolo = localStorage.getItem('ultimoProtocolo');
+        if (protocolo) {
+            inputProtocolo.value = protocolo;
+        }
+    }
+    
+    if (protocolo === "") {
+        alert("Por favor, digite o número do protocolo no campo de busca primeiro!");
+        return;
+    }
+    
+    if (protocolo > 0) {
+        window.open(`/acompanhamento.html?id=${protocolo}`, '_self');
+    } else {
+        alert("Protocolo inválido! Digite apenas números.");
+    }
+}
+
+function abrirMapaComId(id) {
+    if (id) {
+        window.open(`/acompanhamento.html?id=${id}`, '_self');
+    } else {
+        abrirMapaPrompt();
+    }
+}
+
+// Carregar último protocolo ao iniciar
+function carregarUltimoProtocolo() {
+    const ultimoProtocolo = localStorage.getItem('ultimoProtocolo');
+    if (ultimoProtocolo) {
+        const inputProtocolo = document.getElementById("numeroProtocolo");
+        if (inputProtocolo) {
+            inputProtocolo.value = ultimoProtocolo;
+            buscarPorProtocolo();
+        }
+    }
+}
+
+// WINDOW ONLOAD DEFINITIVO (sem conflito)
+window.onload = function() {
+    // Executa a função original
+    originalWindowOnload();
+    // Carrega o último protocolo
+    carregarUltimoProtocolo();
+};
