@@ -6,6 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto Aegis - Login e Painel</title>
     <link rel="stylesheet" href="css/login.css">
+    <style>
+        /* Estilos adicionais para os botões */
+        .btn-painel {
+            transition: all 0.3s ease;
+            transform: scale(1);
+            display: inline-block;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            font-weight: bold;
+        }
+        .btn-painel:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-emergencia {
+            background: #e63946;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            width: 80%;
+        }
+        .btn-mapa {
+            background: #3a86ff;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            width: 80%;
+        }
+        .btn-sair {
+            background: #555;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            width: 80%;
+        }
+        .btn-sair:hover {
+            background: #6c757d;
+        }
+    </style>
 </head>
 
 <body>
@@ -42,10 +84,16 @@
             </div>
         </div>
 
-        <div
-            style="margin-top: 35px; display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
-            <a href="denuncia.html">🚨 Ir para Tela de Emergência</a>
-            <button onclick="deslogar()">Sair</button>
+        <div style="margin-top: 35px; display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
+            <a href="denuncia.html" class="btn-painel btn-emergencia">
+                🚨 Ir para Tela de Emergência
+            </a>
+            <button onclick="abrirMapaPrompt()" class="btn-painel btn-mapa">
+                🗺️ Rastrear Viatura no Mapa
+            </button>
+            <button onclick="deslogar()" class="btn-painel btn-sair">
+                Sair
+            </button>
         </div>
     </div>
 
