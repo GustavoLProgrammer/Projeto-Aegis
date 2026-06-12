@@ -443,7 +443,6 @@ async function listarDenuncias() {
                         🗺️ Acompanhar no Mapa
                     </a>
                 </td>
-            比
             `;
         });
 
