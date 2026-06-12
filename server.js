@@ -266,22 +266,36 @@ app.post('/api/denuncias/:id/mensagens', (req, res) => {
     });
 });
 
-// ========== ROTA SEM LATITUDE/LONGITUDE (OPÇÃO 3) ==========
+// ========== ROTA CORRIGIDA - ADMIN VÊ TUDO, USUÁRIO COMUM SÓ O SEU ==========
 app.get('/api/denuncias/:id', (req, res) => {
     const id = req.params.id;
-    // Removido latitude e longitude da query
-    const query = "SELECT id, status, nome, endereco, tipo_ocorrencia, observacoes FROM denuncias WHERE id = ?";
+    const solicitante = req.query.solicitante;
+    const cargo = req.query.cargo;
+
+    const query = "SELECT id, status, latitude, longitude, nome, cpf, endereco, tipo_ocorrencia, anonima, observacoes FROM denuncias WHERE id = ?";
     
     db.query(query, [id], (err, results) => {
-        if (err) {
-            console.error('ERRO SQL DETALHADO:', err);
-            return res.status(500).json({ erro: 'Erro ao buscar o protocolo.', detalhe: err.message });
+        if (err) return res.status(500).json({ erro: 'Erro ao buscar o protocolo.' });
+        if (results.length === 0) return res.status(404).json({ erro: 'Protocolo não encontrado.' });
+
+        const denuncia = results[0];
+
+        // ADMIN (dev ou master) pode ver TUDO
+        if (cargo === 'dev' || cargo === 'master') {
+            return res.json(denuncia);
         }
-        if (results.length === 0) {
-            return res.status(404).json({ erro: 'Protocolo não encontrado.' });
+
+        // Anônimo: qualquer um logado pode ver
+        if (denuncia.anonima === 1) {
+            return res.json(denuncia);
         }
-        
-        res.json(results[0]);
+
+        // Não anônimo: só o dono (mesmo CPF) pode ver
+        if (solicitante && solicitante !== "anonimo" && denuncia.cpf === solicitante) {
+            return res.json(denuncia);
+        }
+
+        return res.status(403).json({ erro: 'Acesso negado. Esta ocorrência pertence a outro usuário.' });
     });
 });
 // ==========================================================
