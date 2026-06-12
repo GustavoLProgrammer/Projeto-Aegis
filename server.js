@@ -266,10 +266,11 @@ app.post('/api/denuncias/:id/mensagens', (req, res) => {
     });
 });
 
-// ========== ROTA COM LOG DE ERRO DETALHADO ==========
+// ========== ROTA SEM LATITUDE/LONGITUDE (OPÇÃO 3) ==========
 app.get('/api/denuncias/:id', (req, res) => {
     const id = req.params.id;
-    const query = "SELECT id, status, latitude, longitude, nome, endereco, tipo_ocorrencia, observacoes FROM denuncias WHERE id = ?";
+    // Removido latitude e longitude da query
+    const query = "SELECT id, status, nome, endereco, tipo_ocorrencia, observacoes FROM denuncias WHERE id = ?";
     
     db.query(query, [id], (err, results) => {
         if (err) {
