@@ -256,6 +256,11 @@
         localStorage.setItem('ultimoProtocolo', idDenuncia);
     }
     
+    // PEGAR DADOS DO USUÁRIO LOGADO
+    const usuarioLogadoMapa = JSON.parse(localStorage.getItem("usuarioLogado"));
+    const cpfSolicitante = usuarioLogadoMapa ? usuarioLogadoMapa.cpf : "anonimo";
+    const cargoUsuario = usuarioLogadoMapa ? usuarioLogadoMapa.cargo : "";
+    
     const statusAtualSpan = document.getElementById('status-atual');
     const etaContainer = document.getElementById('eta-container');
     const protocoloTitulo = document.getElementById('protocolo-titulo');
@@ -324,78 +329,60 @@
         return `${minutosInteiros} minuto${minutosInteiros > 1 ? 's' : ''} e ${segundosInteiros} segundo${segundosInteiros > 1 ? 's' : ''}`;
     }
 
-    async function buscarStatusDenuncia() {
-        if (!idDenuncia) return;
-        
-        try {
-            const resposta = await fetch(`/api/denuncias/${idDenuncia}`);
-            if (!resposta.ok) throw new Error("Protocolo não encontrado");
-            
-            const denuncia = await resposta.json();
-            statusAtual = denuncia.status;
-            atualizarCorStatus(statusAtual);
-            etaContainer.innerHTML = `📋 Status: ${statusAtual}`;
-            
-            const localSalva = localStorage.getItem(`localizacao_${idDenuncia}`);
-            if (localSalva) {
-                const dados = JSON.parse(localSalva);
-                const agora = Date.now();
-                if (agora - dados.timestamp < 3600000) {
-                    vitimaLat = dados.lat;
-                    vitimaLng = dados.lng;
-                    document.getElementById('map').style.display = 'block';
-                    document.getElementById('btn-centralizar').style.display = 'flex';
-                    iniciarMapa();
-                    return;
-                }
-            }
-            
-            solicitarLocalizacaoAutomatica();
-            
-        } catch (err) {
-            etaContainer.innerHTML = "❌ " + err.message;
-            statusAtualSpan.innerText = "Erro";
-        }
-    }
-    
-    function solicitarLocalizacaoAutomatica() {
+    // FUNÇÃO PARA USAR LOCALIZAÇÃO DO USUÁRIO COMO FALLBACK
+    function usarLocalizacaoUsuarioComoFallback() {
         if (!navigator.geolocation) {
             etaContainer.innerHTML = '❌ Seu navegador não suporta geolocalização';
             return;
         }
         
-        etaContainer.innerHTML = '🟡 Solicitando sua localização...';
+        etaContainer.innerHTML = '🟡Usando sua localização atual...';
         
         navigator.geolocation.getCurrentPosition(
             async (posicao) => {
                 vitimaLat = posicao.coords.latitude;
                 vitimaLng = posicao.coords.longitude;
                 
-                localStorage.setItem(`localizacao_${idDenuncia}`, JSON.stringify({
-                    lat: vitimaLat,
-                    lng: vitimaLng,
-                    timestamp: Date.now()
-                }));
-                
                 document.getElementById('map').style.display = 'block';
                 document.getElementById('btn-centralizar').style.display = 'flex';
-                
-                await iniciarMapa();
+                iniciarMapa();
             },
             (erro) => {
-                let msg = '';
-                switch(erro.code) {
-                    case 1: msg = 'Você negou a permissão. Recarregue a página e permita.';
-                            break;
-                    case 2: msg = 'Localização indisponível. Verifique seu GPS.';
-                            break;
-                    case 3: msg = 'Tempo esgotado. Tente novamente.';
-                            break;
-                    default: msg = erro.message;
-                }
-                etaContainer.innerHTML = `❌ ${msg}`;
+                etaContainer.innerHTML = `❌ Não foi possível obter localização: ${erro.message}`;
             }
         );
+    }
+
+    async function buscarStatusDenuncia() {
+        if (!idDenuncia) return;
+        
+        try {
+            const resposta = await fetch(`/api/denuncias/${idDenuncia}?solicitante=${cpfSolicitante}&cargo=${cargoUsuario}`);
+            if (!resposta.ok) throw new Error("Protocolo não encontrado ou acesso negado");
+            
+            const denuncia = await resposta.json();
+            statusAtual = denuncia.status;
+            atualizarCorStatus(statusAtual);
+            etaContainer.innerHTML = `📋 Status: ${statusAtual}`;
+            
+            // Verificar se a denúncia tem latitude/longitude
+            if (!denuncia.latitude || !denuncia.longitude) {
+                usarLocalizacaoUsuarioComoFallback();
+                return;
+            }
+            
+            vitimaLat = parseFloat(denuncia.latitude);
+            vitimaLng = parseFloat(denuncia.longitude);
+            
+            document.getElementById('map').style.display = 'block';
+            document.getElementById('btn-centralizar').style.display = 'flex';
+            iniciarMapa();
+            
+        } catch (err) {
+            console.error("Erro:", err);
+            etaContainer.innerHTML = "❌ " + err.message;
+            statusAtualSpan.innerText = "Erro";
+        }
     }
     
     function centralizarNoUsuario() {
@@ -549,7 +536,7 @@
                 iconSize: [45, 45],
                 className: 'victim-marker'
             })
-        }).addTo(map).bindPopup("📍 VOCÊ ESTÁ AQUI - LOCAL DA OCORRÊNCIA").openPopup();
+        }).addTo(map).bindPopup("📍 LOCAL DA VÍTIMA").openPopup();
         
         bases.forEach(base => {
             L.marker([base.lat, base.lng], {
